@@ -48,6 +48,7 @@
 
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
+    <!-- Sidebar -->
     <aside class="flex flex-col items-center gap-8 bg-nav-bg p-4 border-r border-white/10 min-h-full">
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
@@ -69,16 +70,41 @@
       </nav>
     </aside>
 
-    <main class="flex-1 p-10 text-white">
-      <h1 class="text-3xl font-bold mb-4">Summary</h1>
-      <p class="text-white/70">Your summary content stays exactly the same...</p>
+    <!-- Main content -->
+    <main class="flex-1 p-10 text-white flex flex-col gap-8">
 
- 
+      <!-- Page Heading -->
+      <h1 class="text-3xl font-bold">Summary</h1>
+
+      <!-- File info -->
+      <div class="bg-nav-bg p-4 rounded-lg shadow-glow-primary">
+        <p class="font-semibold text-lg" id="file-name">File: </p>
+        <p class="text-white/70 text-sm" id="file-date">Date: </p>
+      </div>
+
+      <!-- Summary section -->
+      <div class="bg-background-dark p-6 rounded-lg border border-white/10 min-h-[200px]" id="summary-box">
+        <p class="text-white/50 italic">Summary will appear here once generated...</p>
+      </div>
+
+      <!-- Backend-integration placeholder -->
+      <div class="bg-background-dark p-6 rounded-lg border border-white/10 min-h-[150px]">
+        <p class="text-white/40 italic">Backend processing section (coming soon)</p>
+      </div>
+
+      <!-- Search bar -->
+      <div class="flex items-center gap-2">
+        <input type="text" placeholder="Search summary..."
+          class="flex-1 p-3 rounded-lg bg-background-dark border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent" />
+        <button class="px-4 py-2 bg-accent rounded-lg text-surface font-semibold hover:opacity-80">Search</button>
+      </div>
+
+
     </main>
-
 
   </div>
 
+  <!-- Highlight current sidebar nav -->
   <script>
     const page = window.location.pathname.split("/").pop();
     const map = {
@@ -98,6 +124,27 @@
       el.appendChild(bar);
     }
   </script>
+  <script>
+    // Load file info from localStorage
+    const fileNameEl = document.getElementById("file-name");
+    const fileDateEl = document.getElementById("file-date");
+
+    const uploadedFileName = localStorage.getItem("uploadedFileName");
+    const uploadedFileDate = localStorage.getItem("uploadedFileDate");
+
+    if (uploadedFileName) {
+      fileNameEl.textContent = "File: " + uploadedFileName;
+    }
+
+    if (uploadedFileDate) {
+      fileDateEl.textContent = "Date: " + uploadedFileDate;
+    }
+
+    // Placeholder summary section (to integrate backend later)
+    const summaryBox = document.getElementById("summary-box");
+    // You can later replace summaryBox.innerHTML with backend-generated summary
+  </script>
 
 </body>
+
 </html>

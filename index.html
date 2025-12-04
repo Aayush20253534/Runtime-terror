@@ -51,7 +51,7 @@
 </head>
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
-  
+
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
     <!-- Sidebar -->
@@ -85,7 +85,7 @@
 
       <div id="drop-zone"
         class="flex flex-col items-center justify-center gap-6 border-2 border-dashed border-accent 
-               w-full max-w-[600px] h-[60vh] bg-black/50 px-12 py-12 cursor-pointer shadow-glow-accent rounded-lg">
+               w-full max-w-[600px] h-[60vh] bg-black/50 px-12 py-12 cursor-pointer shadow-glow-accent rounded-lg transition">
 
         <!-- Upload icon -->
         <div class="text-accent flex items-center justify-center">
@@ -156,30 +156,46 @@
     const uploadBlock = document.getElementById("upload-block");
     const loader = document.getElementById("loader");
     const summarizeBtn = document.getElementById("summarize-btn");
+    const dropZone = document.getElementById("drop-zone");
 
-    selectBtn.addEventListener("click", () => fileInput.click());
-
-    fileInput.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
+    function handleFile(file) {
       if (!file) return;
 
-      // UI: hide upload block
-      uploadBlock.classList.add("hidden");
+      localStorage.setItem("uploadedFileName", file.name);
+      localStorage.setItem("uploadedFileDate", new Date().toLocaleString());
 
-      // UI: show loader
+      uploadBlock.classList.add("hidden");
       loader.classList.remove("hidden");
 
-      // Trigger backend preprocess (non-blocking)
       fetch("http://127.0.0.1:8000/preprocess", {
         method: "POST",
         body: file
       }).catch(() => {});
 
-      // After 5 sec → loader hides → summarize shows
       setTimeout(() => {
         loader.classList.add("hidden");
         summarizeBtn.classList.remove("hidden");
       }, 5000);
+    }
+
+    // Click upload
+    selectBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
+
+    // Drag & drop
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("border-white");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("border-white");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("border-white");
+      handleFile(e.dataTransfer.files[0]);
     });
 
     summarizeBtn.addEventListener("click", () => {
