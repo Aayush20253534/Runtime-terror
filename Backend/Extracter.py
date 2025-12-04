@@ -2,6 +2,7 @@
 
 import pymupdf
 import os
+from pathlib import Path
 import google.generativeai as genai
 import easyocr
 import json
@@ -12,12 +13,14 @@ from dotenv import load_dotenv
 class GenerationModel:
 
     def __init__(self) -> None:
+        env_path = Path(__file__).parent / "API_key.env"
+        load_dotenv(env_path)
 
-        load_dotenv("Backend/API_key.env")
         self.api_key = os.getenv("GEMINI_API_KEY")
+        print("Loaded API KEY:", self.api_key)   # Debug print
 
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel("gemini-2.5-flash")  
+        self.model = genai.GenerativeModel("gemini-2.5-flash") 
 
 class TextExtracter:
 
@@ -44,6 +47,7 @@ class TextExtracter:
         
         except FileNotFoundError:
             data_stored = {}
+            total_entries=0
         index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
         data_entry = \
         {
@@ -54,7 +58,7 @@ class TextExtracter:
                 "summary" : self.summary,
                 "date" : f"{date.today()}",
                 "category" : self.category,
-                "vector_id" : "file1"
+                "vector_id" : index
             }
         }
 
