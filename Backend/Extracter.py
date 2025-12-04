@@ -27,7 +27,8 @@ class TextExtracter:
         self.model = GenerationModel()
         self.possibleCategories = ["Operations","Enemy sightings","Zord Systems","Ranger Personnel","Research & Development", "Weapons & Equipment", "Communications", "Administration", "Security", "Archives", "Logistics", "Infrastructure & Maintenance"]
 
-    def handleFiles(self, file):
+        
+    def handleFiles(self, file:str) -> dict:
         
         if file.endswith(".pdf"):
             self.text = self.extractText(file)
@@ -44,6 +45,7 @@ class TextExtracter:
         
         except FileNotFoundError:
             data_stored = {}
+
         index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
         data_entry = \
         {
@@ -54,7 +56,7 @@ class TextExtracter:
                 "summary" : self.summary,
                 "date" : f"{date.today()}",
                 "category" : self.category,
-                "vector_id" : "file1"
+                "vector_id" : index
             }
         }
 
@@ -66,11 +68,20 @@ class TextExtracter:
 
         return data_stored[index]
     
-    def extractText(self, filePath:str) -> str:
+    def extractText(self, filePath:str, pagelevel:bool = False, pages:list=[]) -> str:
         
-        with pymupdf.open(filePath) as doc:
+        if not pagelevel:
+            with pymupdf.open(filePath) as doc:
 
-            text = chr(12).join([page.get_text() for page in doc])
+                text = chr(12).join([page.get_text() for page in doc])
+        
+        else: 
+            with pymupdf.open(filePath) as doc:
+                
+                for i in pages:
+
+                    page = doc[i-1]
+                    text = chr(12).join([page.get_text()])
         
         return text
 
@@ -93,10 +104,6 @@ class TextExtracter:
         prompt_category = f"""{text}\nGo through the above text and assign it a category out of these options - {self.possibleCategories}"""
         category = self.model.model.generate_content(prompt_category)
 
+
         return summary.text, category.text
         
-
-if __name__ == "__main__":
-
-    extracter = TextExtracter()
-
