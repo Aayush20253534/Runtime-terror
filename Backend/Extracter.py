@@ -37,11 +37,17 @@ class TextExtracter:
         
         self.summary, self.category = self.summarize_categorize(self.text)
         
+        try:
+            with open("Database/data.json", "r") as f:
+                data_stored = json.load(f)
+                total_entries = len(data_stored)
         
-
+        except FileNotFoundError:
+            data_stored = {}
+        index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
         data_entry = \
         {
-            file:
+            index:
             {
                 "filename" : os.path.basename(file),
                 "text" : self.text,
@@ -52,19 +58,13 @@ class TextExtracter:
             }
         }
 
-        try:
-            with open("Database/data.json", "r") as f:
-                data_stored = json.load(f)
-        
-        except FileNotFoundError:
-            data_stored = {}
 
-        data_stored[file] = data_entry[file]
+        data_stored[index] = data_entry[index]
 
         with open("Database/data.json", "w") as f:
             json.dump(data_stored, f, indent=4)
 
-        return data_stored
+        return data_stored[index]
     
     def extractText(self, filePath:str) -> str:
         
