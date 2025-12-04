@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Document Upload</title>
+  <title>Neuro Ranger</title>
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -23,13 +23,14 @@
             "background-light": "#f8f8f5",
             "background-dark": "#1C1C1C",
             "accent": "#00BFFF",
-            "surface": "#0A0A0A"
+            "surface": "#0A0A0A",
+            "nav-bg": "#111111"
           },
           fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
-          borderRadius: { "DEFAULT": "12px", "lg": "16px", "xl": "20px", "full": "9999px" },
+          borderRadius: { "DEFAULT": "0px" },
           boxShadow: {
-            'glow-accent': '0 0 15px 0 rgba(0, 191, 255, 0.6)',
-            'glow-primary': '0 0 15px 0 rgba(255, 215, 0, 0.5)',
+            'glow-accent': '0 0 20px 0 rgba(0, 191, 255, 0.6)',
+            'glow-primary': '0 0 20px 0 rgba(255, 215, 0, 0.6)',
           }
         }
       }
@@ -38,83 +39,86 @@
 
   <style>
     .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-
     body {
-      min-height: max(884px, 100dvh);
+      min-height: 100dvh;
     }
   </style>
 </head>
 
-<body class="bg-surface font-display min-h-screen flex">
-  <div class="flex w-full">
+<body class="bg-surface font-display flex flex-col min-h-screen">
+  
+  <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
-
-    <aside class="flex flex-col items-center gap-8 bg-surface p-3 border-r border-white/10">
-      <div class="text-primary flex size-10 items-center justify-center">
+    <!-- Sidebar -->
+    <aside class="flex flex-col items-center gap-8 bg-nav-bg p-4 border-r border-white/10 min-h-full">
+      <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
       </div>
 
       <nav class="flex flex-col items-center gap-6">
-
-        <a class="nav-item text-white/60 hover:text-white transition-colors" href="index.html" id="nav-upload">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="index.html" id="nav-upload">
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
         </a>
-
-        <a class="nav-item text-white/60 hover:text-white transition-colors" href="summary.html" id="nav-summary">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="summary.html" id="nav-summary">
           <span class="material-symbols-outlined !text-3xl">description</span>
         </a>
-
-
-        <a class="nav-item text-white/60 hover:text-white transition-colors" href="history.html" id="nav-history">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="history.html" id="nav-history">
           <span class="material-symbols-outlined !text-3xl">history</span>
         </a>
-
-        <a class="nav-item text-white/60 hover:text-white transition-colors" href="analysis.html" id="nav-analysis">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="analysis.html" id="nav-analysis">
           <span class="material-symbols-outlined !text-3xl">analytics</span>
         </a>
-
       </nav>
     </aside>
 
-    <main class="flex-1 bg-background-dark flex items-center justify-center">
-      <div class="p-8 w-full max-w-3xl">
+    <!-- Main Content -->
+   <main class="flex-1 flex items-center justify-center p-6"
+      style="background-image: url('./1.png'); 
+             background-size: cover; 
+             background-position: center; 
+             background-repeat: no-repeat;">
 
+      <!-- Drop Zone Container -->
+      <div id="drop-zone"
+           class="flex flex-col items-center justify-center gap-6 border-2 border-dashed border-accent 
+                  w-full max-w-[600px] h-[60vh] bg-black/50 px-12 py-12 cursor-pointer shadow-glow-accent rounded-lg">
 
-        <div id="drop-zone"
-          class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-accent/50 px-6 py-14 shadow-glow-accent ring-2 ring-accent/20 bg-accent/5 cursor-pointer">
-
-          <div class="text-accent flex size-12 items-center justify-center">
-            <span class="material-symbols-outlined !text-5xl">cloud_upload</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-2">
-            <p class="text-white text-lg font-bold text-center">Drag & Drop Files Here</p>
-            <p class="text-white/70 text-sm text-center">Supports PDF, DOCX, TXT | Max 100TB</p>
-          </div>
-
-          <button class="flex items-center justify-center rounded-lg h-12 px-6 bg-accent text-surface font-bold">
-            Select File
-          </button>
-
-          <input id="file-input" type="file" class="hidden">
+        <!-- Upload icon -->
+        <div class="text-accent flex items-center justify-center">
+          <span class="material-symbols-outlined !text-6xl">cloud_upload</span>
         </div>
 
-        <div id="file-info" class="hidden mt-6 bg-surface rounded-xl p-4 border border-white/10">
+        <!-- Instructions -->
+        <div class="flex flex-col items-center gap-2">
+          <p class="text-white text-2xl font-bold text-center">Drag & Drop Files Here</p>
+          <p class="text-white/70 text-sm text-center">Supports PDF, DOCX, TXT | Max 100MB</p>
+        </div>
+
+        <!-- Select file button -->
+        <button class="flex items-center justify-center rounded h-14 px-8 bg-accent text-surface font-bold hover:brightness-110 transition">
+          Select File
+        </button>
+
+        <!-- Hidden file input -->
+        <input id="file-input" type="file" class="hidden">
+
+        <!-- File info -->
+        <div id="file-info" class="hidden mt-6 bg-surface/80 rounded p-4 border border-white/10 w-full">
           <div class="flex justify-between items-center">
             <div>
               <p class="text-white font-medium" id="file-name"></p>
               <p class="text-white/60 text-sm" id="file-size"></p>
             </div>
-
-            <button id="upload-btn" class="bg-accent text-surface px-4 py-2 rounded-lg font-bold">
+            <button id="upload-btn" class="bg-accent text-surface px-4 py-2 rounded font-bold">
               Upload & Summarize
             </button>
           </div>
         </div>
 
-        <div id="result" class="hidden mt-8 bg-surface rounded-xl p-6 border border-white/10">
+        <!-- Summary result -->
+        <div id="result" class="hidden mt-8 bg-surface/80 rounded p-6 border border-white/10 w-full">
           <h2 class="text-white text-xl font-bold mb-2">Summary</h2>
           <p id="summary-text" class="text-white/70 leading-relaxed"></p>
         </div>
@@ -122,31 +126,27 @@
       </div>
 
     </main>
-  </div>
+
   </div>
 
   <script>
     const page = window.location.pathname.split("/").pop();
-
     const map = {
       "index.html": "nav-upload",
       "summary.html": "nav-summary",
       "history.html": "nav-history",
       "analysis.html": "nav-analysis",
     };
-
     const activeId = map[page];
     if (activeId) {
       const el = document.getElementById(activeId);
       el.classList.remove("text-white/60");
       el.classList.add("text-accent", "relative");
-
       const bar = document.createElement("div");
-      bar.className = "absolute -right-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
+      bar.className = "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
       el.appendChild(bar);
     }
   </script>
-
 
   <script>
     const dropZone = document.getElementById("drop-zone");
@@ -160,20 +160,14 @@
 
     let selectedFile = null;
 
-    // --------- FILE SELECTION LOGIC ----------
     dropZone.addEventListener("click", () => fileInput.click());
-
     fileInput.addEventListener("change", (e) => setFile(e.target.files[0]));
 
     dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
       dropZone.classList.add("border-accent");
     });
-
-    dropZone.addEventListener("dragleave", () =>
-      dropZone.classList.remove("border-accent")
-    );
-
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("border-accent"));
     dropZone.addEventListener("drop", (e) => {
       e.preventDefault();
       dropZone.classList.remove("border-accent");
@@ -182,57 +176,35 @@
 
     function setFile(file) {
       if (!file) return;
-
       selectedFile = file;
       fileNameEl.textContent = file.name;
       fileSizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + " MB";
       fileInfo.classList.remove("hidden");
     }
 
-    // --------- UPLOAD BUTTON CLICK ----------
     uploadBtn.addEventListener("click", async () => {
       if (!selectedFile) return alert("Select a file first.");
-
       uploadBtn.textContent = "Uploading...";
       uploadBtn.disabled = true;
-
       await uploadFile(selectedFile);
-
       uploadBtn.textContent = "Upload & Summarize";
       uploadBtn.disabled = false;
     });
 
-    // --------- ACTUAL UPLOAD FUNCTION ----------
     async function uploadFile(file) {
-
       const formData = new FormData();
-      formData.append("file", file);  // MUST match FastAPI param name: file
-
+      formData.append("file", file);
       try {
-        const response = await fetch("http://127.0.0.1:8000/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Server returned an error");
-        }
-
+        const response = await fetch("http://127.0.0.1:8000/upload", { method: "POST", body: formData });
+        if (!response.ok) throw new Error("Server returned an error");
         const data = await response.json();
-        console.log("Upload Response:", data);
-
-        // Show summary or placeholder
         summaryText.textContent = data.extracted_text || "File uploaded successfully.";
-
         resultBox.classList.remove("hidden");
-
       } catch (err) {
-        alert("File uploaded successfully");
+        alert("Upload failed: " + err.message);
       }
     }
   </script>
 
-
 </body>
-
 </html>
