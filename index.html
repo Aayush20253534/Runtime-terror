@@ -44,6 +44,7 @@
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+
     body {
       min-height: 100dvh;
     }
@@ -77,8 +78,7 @@
     </aside>
 
     <!-- Main -->
-    <main class="flex-1 flex items-center justify-center p-6"
-      style="background-image: url('./1.png'); 
+    <main class="flex-1 flex items-center justify-center p-6" style="background-image: url('./1.png'); 
              background-size: cover; 
              background-position: center; 
              background-repeat: no-repeat;">
@@ -112,7 +112,9 @@
         <div id="loader" class="hidden flex flex-col items-center gap-4 mt-4">
           <div class="relative">
             <div class="w-14 h-14 border-4 border-accent animate-spin rounded-full border-t-transparent"></div>
-            <div class="absolute inset-0 w-14 h-14 border-4 border-primary animate-spin-slow rounded-full border-b-transparent"></div>
+            <div
+              class="absolute inset-0 w-14 h-14 border-4 border-primary animate-spin-slow rounded-full border-b-transparent">
+            </div>
           </div>
           <p class="text-white/70 text-sm">Processing...</p>
         </div>
@@ -158,31 +160,50 @@
     const summarizeBtn = document.getElementById("summarize-btn");
     const dropZone = document.getElementById("drop-zone");
 
-    function handleFile(file) {
+    // --- FUNCTION TO HANDLE FILE UPLOAD ---
+    async function handleFile(file) {
       if (!file) return;
 
       localStorage.setItem("uploadedFileName", file.name);
       localStorage.setItem("uploadedFileDate", new Date().toLocaleString());
 
+      // Hide upload area, show loader
       uploadBlock.classList.add("hidden");
       loader.classList.remove("hidden");
 
-      fetch("http://127.0.0.1:8000/preprocess", {
-        method: "POST",
-        body: file
-      }).catch(() => {});
+      const formData = new FormData();
+      formData.append("file", file);
 
-      setTimeout(() => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/preprocess", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Backend error: " + response.status);
+        }
+
+        // OPTIONAL: If backend returns JSON
+        const resData = await response.json();
+        console.log("Preprocess response:", resData);
+
+        // When backend finishes → show summarize button
         loader.classList.add("hidden");
         summarizeBtn.classList.remove("hidden");
-      }, 5000);
+
+      } catch (err) {
+        loader.classList.add("hidden");
+        uploadBlock.classList.remove("hidden");
+        alert("Upload failed: " + err.message);
+      }
     }
 
-    // Click upload
+    // --- CLICK UPLOAD ---
     selectBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
 
-    // Drag & drop
+    // --- DRAG & DROP ---
     dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
       dropZone.classList.add("border-white");
@@ -204,4 +225,5 @@
   </script>
 
 </body>
+
 </html>

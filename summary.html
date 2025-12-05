@@ -125,25 +125,56 @@
     }
   </script>
   <script>
-    // Load file info from localStorage
     const fileNameEl = document.getElementById("file-name");
     const fileDateEl = document.getElementById("file-date");
+    const summaryBox = document.getElementById("summary-box");
 
     const uploadedFileName = localStorage.getItem("uploadedFileName");
-    const uploadedFileDate = localStorage.getItem("uploadedFileDate");
-
     if (uploadedFileName) {
       fileNameEl.textContent = "File: " + uploadedFileName;
     }
 
-    if (uploadedFileDate) {
-      fileDateEl.textContent = "Date: " + uploadedFileDate;
+    // --- Fetch summary + date + category from backend ---
+    async function loadSummary() {
+      summaryBox.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-white/70 text-sm">Loading summary...</p>
+      </div>
+    `;
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/summary");
+        if (!response.ok) throw new Error("Backend error " + response.status);
+
+        const data = await response.json();
+
+        const summary = data.summary || "No summary found.";
+        const category = data.category || "Unknown";
+        const backendDate = data.date || "Unknown";
+
+        // Update date from backend instead of localStorage
+        fileDateEl.textContent = "Processed On: " + backendDate;
+
+        summaryBox.innerHTML = `
+        <h2 class="text-xl font-semibold mb-3">Generated Summary</h2>
+        <p class="text-white/60 text-sm mb-4">Category: <span class="text-white font-semibold">${category}</span></p>
+        <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${summary}</p>
+      `;
+
+      } catch (err) {
+        summaryBox.innerHTML = `
+        <p class="text-red-400 text-sm">Failed to load summary: ${err.message}</p>
+      `;
+      }
     }
 
-    // Placeholder summary section (to integrate backend later)
-    const summaryBox = document.getElementById("summary-box");
-    // You can later replace summaryBox.innerHTML with backend-generated summary
+    // Auto-run on page load
+    loadSummary();
   </script>
+
+
+
 
 </body>
 
