@@ -2,22 +2,24 @@
 
 import pymupdf
 import os
-import google.generativeai as genai
 import easyocr
 import json
- 
+
+from google import genai
+from pathlib import Path
 from datetime import date
 from dotenv import load_dotenv
 
 class GenerationModel:
 
     def __init__(self) -> None:
+        env_path = Path(__file__).parent / "API_key.env"
+        load_dotenv(env_path)
 
-        load_dotenv("Backend/API_key.env")
         self.api_key = os.getenv("GEMINI_API_KEY")
 
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel("gemini-2.5-flash")  
+        self.client = genai.Client(api_key=self.api_key)
+        # self.model = genai.GenerativeModel("gemini-2.5-flash") 
 
 class TextExtracter:
 
@@ -45,7 +47,7 @@ class TextExtracter:
         
         except FileNotFoundError:
             data_stored = {}
-
+            total_entries = 0
         index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
         data_entry = \
         {
@@ -96,13 +98,19 @@ class TextExtracter:
         return text
 
 
-    def summarize_categorize(self,text) -> str:
+    def summarize_categorize(self,text:str) -> str:
 
         prompt_summary = f"""{text}\nSummarize this text in short while keeping in all the important topics intact. Also provide bullet points at the end."""
-        summary = self.model.model.generate_content(prompt_summary)
+        summary = self.model.client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt_summary
+        )
 
         prompt_category = f"""{text}\nGo through the above text and assign it a category out of these options - {self.possibleCategories}"""
-        category = self.model.model.generate_content(prompt_category)
+        category = self.model.client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt_category
+        )
 
 
         return summary.text, category.text
