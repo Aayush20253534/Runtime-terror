@@ -17,7 +17,7 @@ class GenerationModel:
         load_dotenv(env_path)
 
         self.api_key = os.getenv("GEMINI_API_KEY")
-        print("Loaded API KEY:", self.api_key)   # Debug print
+        print("Loaded API KEY:", self.api_key)
 
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel("gemini-2.5-flash") 
@@ -90,11 +90,45 @@ class TextExtracter:
 
 
     def summarize_categorize(self,text) -> str:
+        
+        prompt_summary = f"""You are an AI engine designed for document intelligence. Summarize the provided document into a clear and concise textual summary.
 
-        prompt_summary = f"""{text}\nSummarize this text in short while keeping in all the important topics intact. Also provide bullet points at the end."""
+                            RULES:
+                            1. Output must be plain text only.
+                            2. Do not use any asterisks, special characters, markdown formatting, or bullet points.
+                            3. Do not add headings or labels.
+                            4. Preserve the original meaning while shortening the content.
+                            5. Ensure the summary is factual, coherent, and stays within the context of the document.
+
+                            Now summarize the following document:
+                            {text}
+                        """
         summary = self.model.model.generate_content(prompt_summary)
 
-        prompt_category = f"""{text}\nGo through the above text and assign it a category out of these options - {self.possibleCategories}"""
+        prompt_category = f"""You are an AI classifier for the Yellow Ranger Doc-Sage Intelligence Engine.
+                            Your job is to classify the document into exactly one of the following predefined categories:
+                            Operations
+                            Enemy sightings
+                            Zord Systems
+                            Ranger Personnel
+                            Research & Development
+                            Weapons & Equipment
+                            Communications
+                            Administration
+                            Security
+                            Archives
+                            Logistics
+                            Infrastructure & Maintenance
+                            
+                            RULES:
+                            1. Output strictly one word only, exactly matching one of the categories above.
+                            2. Output must be plain text only.
+                            3. Do not output any symbols, punctuation, explanations, or phrases.
+                            4. If the document partially fits many categories, choose the closest and most dominant one.
+                            
+                            Classify this document:
+                            {text}
+                        """
         category = self.model.model.generate_content(prompt_category)
 
         return summary.text, category.text
