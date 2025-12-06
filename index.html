@@ -175,7 +175,7 @@
       formData.append("file", file);
 
       try {
-        const response = await fetch("https://7fa739c4ed78.ngrok-free.app/preprocess", {
+        const response = await fetch("http://127.0.0.1:8000/preprocess", {
           method: "POST",
           body: formData,
         });
