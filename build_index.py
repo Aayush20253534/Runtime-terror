@@ -73,6 +73,7 @@ with open(f"{INDEX_DIR}/meta.json", "w") as f:
     json.dump(metadata, f, indent=2)
 
 # Save chunks themselves for retrieval
+#
 with open(f"{INDEX_DIR}/chunks.json", "w") as f:
     json.dump(all_chunks, f, indent=2)
 
