@@ -2,11 +2,11 @@
 
 import pymupdf
 import os
-from pathlib import Path
-import google.generativeai as genai
 import easyocr
 import json
- 
+
+from google import genai
+from pathlib import Path
 from datetime import date
 from dotenv import load_dotenv
 
@@ -17,10 +17,9 @@ class GenerationModel:
         load_dotenv(env_path)
 
         self.api_key = os.getenv("GEMINI_API_KEY")
-        print("Loaded API KEY:", self.api_key)
 
-        genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel("gemini-2.5-flash") 
+        self.client = genai.Client(api_key=self.api_key)
+        # self.model = genai.GenerativeModel("gemini-2.5-flash") 
 
 class TextExtracter:
 
@@ -28,9 +27,8 @@ class TextExtracter:
     def __init__(self) -> None:
 
         self.model = GenerationModel()
-        self.possibleCategories = ["Operations","Enemy sightings","Zord Systems","Ranger Personnel","Research & Development", "Weapons & Equipment", "Communications", "Administration", "Security", "Archives", "Logistics", "Infrastructure & Maintenance"]
-
-    def handleFiles(self, file):
+        
+    def handleFiles(self, file:str) -> dict:
         
         if file.endswith(".pdf"):
             self.text = self.extractText(file)
@@ -47,7 +45,7 @@ class TextExtracter:
         
         except FileNotFoundError:
             data_stored = {}
-            total_entries=0
+            total_entries = 0
         index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
         data_entry = \
         {
@@ -70,11 +68,20 @@ class TextExtracter:
 
         return data_stored[index]
     
-    def extractText(self, filePath:str) -> str:
+    def extractText(self, filePath:str, pagelevel:bool = False, pages:list=[]) -> str:
         
-        with pymupdf.open(filePath) as doc:
+        if not pagelevel:
+            with pymupdf.open(filePath) as doc:
 
-            text = chr(12).join([page.get_text() for page in doc])
+                text = chr(12).join([page.get_text() for page in doc])
+        
+        else: 
+            with pymupdf.open(filePath) as doc:
+                
+                for i in pages:
+
+                    page = doc[i-1]
+                    text = chr(12).join([page.get_text()])
         
         return text
 
@@ -95,15 +102,20 @@ class TextExtracter:
 
                             RULES:
                             1. Output must be plain text only.
-                            2. Do not use any asterisks, special characters, markdown formatting, or bullet points.
+                            2. Do not use any asterisks, special characters, markdown formatting.
                             3. Do not add headings or labels.
                             4. Preserve the original meaning while shortening the content.
                             5. Ensure the summary is factual, coherent, and stays within the context of the document.
+                            6. Also provide bullet points at the end of the summary. You can provide labels for these bullet points.
+                            7. Enclose the words to be bolded inside <b> </b> tags.
 
-                            Now summarize the following document:
+                            Now summarize the following document :
                             {text}
                         """
-        summary = self.model.model.generate_content(prompt_summary)
+        summary = self.model.client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt_summary
+        )
 
         prompt_category = f"""You are an AI classifier for the Yellow Ranger Doc-Sage Intelligence Engine.
                             Your job is to classify the document into exactly one of the following predefined categories:
@@ -129,12 +141,10 @@ class TextExtracter:
                             Classify this document:
                             {text}
                         """
-        category = self.model.model.generate_content(prompt_category)
+        category = self.model.client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt_category
+        )
 
         return summary.text, category.text
         
-
-if __name__ == "__main__":
-
-    extracter = TextExtracter()
-
