@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 import datetime
 from Extracter import TextExtracter
+import rag
 
 app = FastAPI()
 
@@ -16,7 +17,8 @@ app.add_middleware(
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-LAST_RESULT ={}
+LAST_RESULT = {}
+
 
 def process_file_backend(file_path: str):
     extractor = TextExtracter()
@@ -31,10 +33,13 @@ async def preprocess(file: UploadFile = File(...)):
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
+
         processed = process_file_backend(file_path)
+
         summary = processed.get("summary", "")
         category = processed.get("category", "Unknown")
         date_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         LAST_RESULT = {
             "summary": summary,
             "category": category,
@@ -51,7 +56,21 @@ async def preprocess(file: UploadFile = File(...)):
 
 @app.get("/summary")
 async def get_summary():
-    if not LAST_RESULT["summary"]:
+    if not LAST_RESULT.get("summary"):
         raise HTTPException(status_code=404, detail="No summary found. Upload a file first.")
-
     return LAST_RESULT
+
+
+@app.get("/ask")
+async def ask(query: str):
+    try:
+        retrieved = rag.semantic_search(query)
+        answer = rag.generate_answer(query, retrieved)
+        retrieved_texts = [c["text"] for c in retrieved]
+        return {
+            "query": query,
+            "retrieved_chunks": retrieved_texts,
+            "answer": answer
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

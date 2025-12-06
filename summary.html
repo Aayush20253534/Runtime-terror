@@ -228,48 +228,59 @@
     loadSummary();
   </script>
 
-  <!-- NEW: Search Feature -->
   <script>
-    const searchInput = document.getElementById("search-input");
-    const searchBtn = document.getElementById("search-btn");
-    const backendBox = document.getElementById("backend-box");
+  const searchInput = document.getElementById("search-input");
+  const searchBtn = document.getElementById("search-btn");
+  const backendBox = document.getElementById("backend-box");
 
-    async function runSearch() {
-      const query = searchInput.value.trim();
-      if (!query) return;
+  async function runSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    backendBox.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-white/70 text-sm">Thinking...</p>
+      </div>
+    `;
+
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/ask?query=${encodeURIComponent(query)}`
+      );
+
+      if (!res.ok) throw new Error("Backend error " + res.status);
+
+      const data = await res.json();
+      const answer = data.answer || "No answer found.";
+
+      // Optional: show chunks if needed
+      const chunksHtml = data.retrieved_chunks
+        ? data.retrieved_chunks.map(c => `<li class="text-white/40 text-sm">${c}</li>`).join("")
+        : "<li class='text-white/40 text-sm'>No relevant chunks retrieved</li>";
 
       backendBox.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-white/70 text-sm">Searching...</p>
-        </div>
+        <h2 class="text-xl font-semibold mb-3">RAG Search Result</h2>
+
+        <p class="text-white/80 whitespace-pre-wrap leading-relaxed mb-4">
+          ${answer}
+        </p>
+
+        <h3 class="text-lg font-semibold mt-4 mb-2">Retrieved Chunks</h3>
+        <ul class="list-disc pl-5 space-y-2">${chunksHtml}</ul>
       `;
-
-      try {
-        const res = await fetch(`http://127.0.0.1:8000/search?query=${encodeURIComponent(query)}`);
-
-        if (!res.ok) throw new Error("Backend error " + res.status);
-
-        const data = await res.json();
-        const answer = data.answer || "No answer found.";
-
-        backendBox.innerHTML = `
-          <h2 class="text-xl font-semibold mb-3">Search Result</h2>
-          <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${answer}</p>
-        `;
-      } catch (err) {
-        backendBox.innerHTML = `
-          <p class="text-red-400 text-sm">Failed: ${err.message}</p>
-        `;
-      }
+    } catch (err) {
+      backendBox.innerHTML = `
+        <p class="text-red-400 text-sm">Failed: ${err.message}</p>
+      `;
     }
+  }
 
-    searchBtn.addEventListener("click", runSearch);
-
-    searchInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") runSearch();
-    });
-  </script>
+  searchBtn.addEventListener("click", runSearch);
+  searchInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") runSearch();
+  });
+</script>
 
 </body>
 
