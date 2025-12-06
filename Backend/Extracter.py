@@ -113,5 +113,5 @@ class TextExtracter:
         )
 
 
-        return summary.text.replace("**",""), category.text.replace("**","")
+        return summary.text, category.text
         
