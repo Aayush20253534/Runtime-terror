@@ -19,36 +19,64 @@
       theme: {
         extend: {
           colors: {
-            "primary": "#ffd900",
+            primary: "#ffd900",
             "background-light": "#f8f8f5",
             "background-dark": "#1C1C1C",
-            "accent": "#00BFFF",
-            "surface": "#0A0A0A",
+            accent: "#00BFFF",
+            surface: "#0A0A0A",
             "nav-bg": "#111111"
           },
-          fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
-          borderRadius: { "DEFAULT": "0px" },
+          fontFamily: { display: ["Space Grotesk", "sans-serif"] },
+          borderRadius: { DEFAULT: "0px" },
           boxShadow: {
-            'glow-accent': '0 0 20px 0 rgba(0, 191, 255, 0.6)',
-            'glow-primary': '0 0 20px 0 rgba(255, 215, 0, 0.6)'
+            "glow-accent": "0 0 20px 0 rgba(0, 191, 255, 0.6)",
+            "glow-primary": "0 0 20px 0 rgba(255, 215, 0, 0.6)"
           }
         }
       }
-    }
+    };
   </script>
 
   <style>
+    body {
+      min-height: 100dvh;
+    }
+
     .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
     }
   </style>
 </head>
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
 
+  <div id="profile-bar"
+    class="fixed top-4 right-4 hidden items-center gap-3 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-white z-50">
+    <span class="material-symbols-outlined text-accent">person</span>
+    <span id="profile-email" class="text-sm"></span>
+    <button id="logout-btn"
+      class="bg-accent text-black text-sm font-bold px-3 py-1 rounded hover:brightness-110 transition">Logout</button>
+  </div>
+
+  <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-surface p-8 rounded-lg w-96 flex flex-col gap-4">
+      <h2 class="text-2xl font-bold text-white text-center">Login</h2>
+
+      <input id="login-email" type="email" placeholder="Email" class="p-2 rounded bg-black/20 text-white">
+      <input id="login-password" type="password" placeholder="Password" class="p-2 rounded bg-black/20 text-white">
+
+      <div class="flex justify-between gap-2">
+        <button id="login-btn"
+          class="flex-1 bg-accent text-black font-bold py-2 rounded hover:brightness-110 transition">Login</button>
+        <button id="signup-btn"
+          class="flex-1 bg-primary text-black font-bold py-2 rounded hover:brightness-110 transition">Signup</button>
+      </div>
+    </div>
+  </div>
+
+
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
-    <!-- SIDEBAR (Identical to Summary) -->
     <aside class="flex flex-col items-center gap-8 bg-nav-bg p-4 border-r border-white/10 min-h-full">
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
@@ -70,12 +98,10 @@
       </nav>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 p-10 text-white">
       <h1 class="text-3xl font-bold mb-4">History</h1>
       <p class="text-white/70 mb-6">Your previous uploads and summaries...</p>
 
-      <!-- HISTORY LIST -->
       <div class="space-y-4">
 
         <div class="p-4 bg-nav-bg border border-white/10 rounded">
@@ -108,7 +134,6 @@
 
   </div>
 
-  <!-- ACTIVE NAV LOGIC -->
   <script>
     const page = window.location.pathname.split("/").pop();
     const map = {
@@ -130,5 +155,61 @@
     }
   </script>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9b4TGNUJAZvxV0EL_IN74OSOTTYrOhCU",
+      authDomain: "runtime-terror-3e0b9.firebaseapp.com",
+      projectId: "runtime-terror-3e0b9",
+      storageBucket: "runtime-terror-3e0b9.firebasestorage.app",
+      messagingSenderId: "40107406256",
+      appId: "1:40107406256:web:9fa1ba1bb337f72ab95c75"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginModal = document.getElementById("login-modal");
+    const loginBtn = document.getElementById("login-btn");
+    const signupBtn = document.getElementById("signup-btn");
+    const emailInput = document.getElementById("login-email");
+    const passwordInput = document.getElementById("login-password");
+    const profileBar = document.getElementById("profile-bar");
+    const profileEmail = document.getElementById("profile-email");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginModal.classList.add("hidden");
+        profileBar.classList.remove("hidden");
+        profileEmail.textContent = user.email;
+      } else {
+        profileBar.classList.add("hidden");
+        loginModal.classList.remove("hidden");
+        profileEmail.textContent = "";
+      }
+    });
+
+    loginBtn?.addEventListener("click", () =>
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value).catch(err => alert(err.message))
+    );
+
+    signupBtn?.addEventListener("click", () =>
+      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => alert("Signup successful! Login now."))
+    );
+
+    logoutBtn?.addEventListener("click", () => signOut(auth));
+  </script>
+
 </body>
+
 </html>

@@ -3,11 +3,9 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Summary</title>
-
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
   <link
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
@@ -19,41 +17,72 @@
       theme: {
         extend: {
           colors: {
-            "primary": "#ffd900",
-            "background-light": "#f8f8f5",
-            "background-dark": "#1C1C1C",
-            "accent": "#00BFFF",
-            "surface": "#0A0A0A",
-            "nav-bg": "#111111"
+            primary: "#ffd900",
+            background_light: "#f8f8f5",
+            background_dark: "#1C1C1C",
+            accent: "#00BFFF",
+            surface: "#0A0A0A",
+            nav_bg: "#111111"
           },
-          fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
-          borderRadius: { "DEFAULT": "0px" },
+          fontFamily: {
+            display: ["Space Grotesk", "sans-serif"]
+          },
+          borderRadius: {
+            DEFAULT: "0px"
+          },
           boxShadow: {
-            'glow-accent': '0 0 20px 0 rgba(0, 191, 255, 0.6)',
-            'glow-primary': '0 0 20px 0 rgba(255, 215, 0, 0.6)'
+            'glow-accent': '0 0 20px 0 rgba(0,191,255,0.6)',
+            'glow-primary': '0 0 20px 0 rgba(255,215,0,0.6)'
           }
         }
       }
-    }
+    };
   </script>
 
   <style>
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+
+    body {
+      min-height: 100dvh;
+    }
   </style>
 </head>
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
 
+  <!-- Profile Bar -->
+  <div id="profile-bar"
+    class="fixed top-4 right-4 hidden items-center gap-3 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-white z-50">
+    <span class="material-symbols-outlined text-accent">person</span>
+    <span id="profile-email" class="text-sm"></span>
+    <button id="logout-btn"
+      class="bg-accent text-black text-sm font-bold px-3 py-1 rounded hover:brightness-110 transition">Logout</button>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-surface p-8 rounded-lg w-96 flex flex-col gap-4">
+      <h2 class="text-2xl font-bold text-white text-center">Login</h2>
+      <input id="login-email" type="email" placeholder="Email" class="p-2 rounded bg-black/20 text-white">
+      <input id="login-password" type="password" placeholder="Password" class="p-2 rounded bg-black/20 text-white">
+      <div class="flex justify-between gap-2">
+        <button id="login-btn"
+          class="flex-1 bg-accent text-black font-bold py-2 rounded hover:brightness-110 transition">Login</button>
+        <button id="signup-btn"
+          class="flex-1 bg-primary text-black font-bold py-2 rounded hover:brightness-110 transition">Signup</button>
+      </div>
+    </div>
+  </div>
+
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
     <!-- Sidebar -->
-    <aside class="flex flex-col items-center gap-8 bg-nav-bg p-4 border-r border-white/10 min-h-full">
+    <aside class="flex flex-col items-center gap-8 bg-nav_bg p-4 border-r border-white/10 min-h-full">
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
       </div>
-
       <nav class="flex flex-col items-center gap-6">
         <a class="text-white/60 hover:text-accent transition-colors" href="index.html" id="nav-upload">
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
@@ -70,111 +99,177 @@
       </nav>
     </aside>
 
-    <!-- Main content -->
+    <!-- Main -->
     <main class="flex-1 p-10 text-white flex flex-col gap-8">
-
-      <!-- Page Heading -->
       <h1 class="text-3xl font-bold">Summary</h1>
 
-      <!-- File info -->
-      <div class="bg-nav-bg p-4 rounded-lg shadow-glow-primary">
-        <p class="font-semibold text-lg" id="file-name">File: </p>
-        <p class="text-white/70 text-sm" id="file-date">Date: </p>
+      <!-- File Info -->
+      <div class="bg-nav_bg p-4 rounded-lg shadow-glow-primary">
+        <p class="font-semibold text-lg" id="file-name">File:</p>
+        <p class="text-white/70 text-sm" id="file-date">Date:</p>
       </div>
 
-      <!-- Summary section -->
+      <!-- Summary Box -->
       <div class="bg-background-dark p-6 rounded-lg border border-white/10 min-h-[200px]" id="summary-box">
         <p class="text-white/50 italic">Summary will appear here once generated...</p>
       </div>
 
-      <!-- Backend-integration placeholder -->
-      <div class="bg-background-dark p-6 rounded-lg border border-white/10 min-h-[150px]">
+      <!-- Backend Processing Box -->
+      <div id="backend-box" class="bg-background-dark p-6 rounded-lg border border-white/10 min-h-[150px]">
         <p class="text-white/40 italic">Backend processing section (coming soon)</p>
       </div>
 
-      <!-- Search bar -->
+      <!-- Search -->
       <div class="flex items-center gap-2">
-        <input type="text" placeholder="Search summary..."
-          class="flex-1 p-3 rounded-lg bg-background-dark border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent" />
-        <button class="px-4 py-2 bg-accent rounded-lg text-surface font-semibold hover:opacity-80">Search</button>
+        <input id="search-input" type="text" placeholder="Search summary..." class="flex-1 p-3 rounded-lg bg-surface border border-white/10 
+           text-white/70 placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-accent" />
+        <button id="search-btn" class="px-4 py-2 bg-accent rounded-lg text-black font-semibold hover:opacity-80">
+          Search
+        </button>
       </div>
 
-
     </main>
-
   </div>
 
-  <!-- Highlight current sidebar nav -->
-  <script>
-    const page = window.location.pathname.split("/").pop();
-    const map = {
-      "index.html": "nav-upload",
-      "summary.html": "nav-summary",
-      "history.html": "nav-history",
-      "analysis.html": "nav-analysis",
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9b4TGNUJAZvxV0EL_IN74OSOTTYrOhCU",
+      authDomain: "runtime-terror-3e0b9.firebaseapp.com",
+      projectId: "runtime-terror-3e0b9",
+      storageBucket: "runtime-terror-3e0b9.firebasestorage.app",
+      messagingSenderId: "40107406256",
+      appId: "1:40107406256:web:9fa1ba1bb337f72ab95c75"
     };
-    const activeId = map[page];
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      el.classList.remove("text-white/60");
-      el.classList.add("text-accent", "relative");
-      const bar = document.createElement("div");
-      bar.className =
-        "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
-      el.appendChild(bar);
-    }
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginModal = document.getElementById("login-modal");
+    const loginBtn = document.getElementById("login-btn");
+    const signupBtn = document.getElementById("signup-btn");
+    const emailInput = document.getElementById("login-email");
+    const passwordInput = document.getElementById("login-password");
+    const profileBar = document.getElementById("profile-bar");
+    const profileEmail = document.getElementById("profile-email");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        loginModal.classList.add("hidden");
+        profileBar.classList.remove("hidden");
+        profileEmail.textContent = user.email;
+      } else {
+        profileBar.classList.add("hidden");
+        loginModal.classList.remove("hidden");
+        profileEmail.textContent = "";
+      }
+    });
+
+    loginBtn?.addEventListener("click", () =>
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .catch(err => alert(err.message)));
+
+    signupBtn?.addEventListener("click", () =>
+      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => alert("Signup successful! Login now.")));
+
+    logoutBtn?.addEventListener("click", () => signOut(auth));
   </script>
+
+  <!-- Current Summary Script -->
   <script>
+    const el = document.getElementById("nav-summary");
+    el.classList.remove("text-white/60");
+    el.classList.add("text-accent", "relative");
+    const bar = document.createElement("div");
+    bar.className = "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
+    el.appendChild(bar);
+
     const fileNameEl = document.getElementById("file-name");
     const fileDateEl = document.getElementById("file-date");
     const summaryBox = document.getElementById("summary-box");
-
     const uploadedFileName = localStorage.getItem("uploadedFileName");
+
     if (uploadedFileName) {
       fileNameEl.textContent = "File: " + uploadedFileName;
     }
 
-    // --- Fetch summary + date + category from backend ---
     async function loadSummary() {
       summaryBox.innerHTML = `
-      <div class="flex items-center gap-3">
-        <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-white/70 text-sm">Loading summary...</p>
-      </div>
-    `;
+        <div class="flex items-center gap-3">
+          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-white/70 text-sm">Loading summary...</p>
+        </div>`;
 
       try {
         const response = await fetch("http://127.0.0.1:8000/summary");
         if (!response.ok) throw new Error("Backend error " + response.status);
 
         const data = await response.json();
-
         const summary = data.summary || "No summary found.";
         const category = data.category || "Unknown";
         const backendDate = data.date || "Unknown";
 
-        // Update date from backend instead of localStorage
         fileDateEl.textContent = "Processed On: " + backendDate;
 
         summaryBox.innerHTML = `
-        <h2 class="text-xl font-semibold mb-3">Generated Summary</h2>
-        <p class="text-white/60 text-sm mb-4">Category: <span class="text-white font-semibold">${category}</span></p>
-        <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${summary}</p>
-      `;
-
+          <h2 class="text-xl font-semibold mb-3">Generated Summary</h2>
+          <p class="text-white/60 text-sm mb-4">Category: <span class="text-white font-semibold">${category}</span></p>
+          <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${summary}</p>`;
       } catch (err) {
-        summaryBox.innerHTML = `
-        <p class="text-red-400 text-sm">Failed to load summary: ${err.message}</p>
-      `;
+        summaryBox.innerHTML = `<p class="text-red-400 text-sm">Failed to load summary: ${err.message}</p>`;
       }
     }
 
-    // Auto-run on page load
     loadSummary();
   </script>
 
+  <!-- NEW: Search Feature -->
+  <script>
+    const searchInput = document.getElementById("search-input");
+    const searchBtn = document.getElementById("search-btn");
+    const backendBox = document.getElementById("backend-box");
 
+    async function runSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
 
+      backendBox.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-white/70 text-sm">Searching...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/search?query=${encodeURIComponent(query)}`);
+
+        if (!res.ok) throw new Error("Backend error " + res.status);
+
+        const data = await res.json();
+        const answer = data.answer || "No answer found.";
+
+        backendBox.innerHTML = `
+          <h2 class="text-xl font-semibold mb-3">Search Result</h2>
+          <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${answer}</p>
+        `;
+      } catch (err) {
+        backendBox.innerHTML = `
+          <p class="text-red-400 text-sm">Failed: ${err.message}</p>
+        `;
+      }
+    }
+
+    searchBtn.addEventListener("click", runSearch);
+
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") runSearch();
+    });
+  </script>
 
 </body>
 
