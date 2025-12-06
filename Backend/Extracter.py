@@ -106,12 +106,12 @@ class TextExtracter:
             contents=prompt_summary
         )
 
-        prompt_category = f"""{text}\nGo through the above text and assign it a category out of these options - {self.possibleCategories}"""
+        prompt_category = f"""{text}\nGo through the above text and assign it a category out of these options - {self.possibleCategories}. Answer in one word."""
         category = self.model.client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt_category
         )
 
 
-        return summary.text, category.text
+        return summary.text.replace("**",""), category.text.replace("**","")
         
