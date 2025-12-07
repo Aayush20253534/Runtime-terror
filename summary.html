@@ -248,26 +248,15 @@
       const res = await fetch(
         `http://127.0.0.1:8000/ask?query=${encodeURIComponent(query)}`
       );
-
       if (!res.ok) throw new Error("Backend error " + res.status);
-
       const data = await res.json();
       const answer = data.answer || "No answer found.";
-
-      // Optional: show chunks if needed
-      const chunksHtml = data.retrieved_chunks
-        ? data.retrieved_chunks.map(c => `<li class="text-white/40 text-sm">${c}</li>`).join("")
-        : "<li class='text-white/40 text-sm'>No relevant chunks retrieved</li>";
-
       backendBox.innerHTML = `
         <h2 class="text-xl font-semibold mb-3">RAG Search Result</h2>
 
         <p class="text-white/80 whitespace-pre-wrap leading-relaxed mb-4">
           ${answer}
         </p>
-
-        <h3 class="text-lg font-semibold mt-4 mb-2">Retrieved Chunks</h3>
-        <ul class="list-disc pl-5 space-y-2">${chunksHtml}</ul>
       `;
     } catch (err) {
       backendBox.innerHTML = `
@@ -275,7 +264,6 @@
       `;
     }
   }
-
   searchBtn.addEventListener("click", runSearch);
   searchInput.addEventListener("keydown", e => {
     if (e.key === "Enter") runSearch();
