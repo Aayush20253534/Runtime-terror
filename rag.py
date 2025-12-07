@@ -1,111 +1,73 @@
-import os
-import json
 import faiss
-import numpy as np
-from google import genai
-from sentence_transformers import SentenceTransformer
+import nltk
+from sentence_transformers import SentenceTransformer, CrossEncoder
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download("punkt", quiet=True)
+    nltk.download("punkt_tab", quiet=True)
 
+class RAGSystem:
+    def __init__(self):
+        print("Loading embedding models...")
+        self.embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        self.index = None
+        self.chunks = []
+        print("Models loaded.")
+ 
+    def chunk_text(self, text, size=300, overlap=50):
+        sentences = nltk.sent_tokenize(text)
+        chunks = []
+        current = []
 
+        for sentence in sentences:
+            words = sentence.split()
+            if len(" ".join(current + words)) > size:
+                chunks.append(" ".join(current))
+                current = words[-overlap:]
+            else:
+                current.extend(words)
 
-client = genai.Client(api_key="AIzaSyDJdJ9BtezaRkPYn9OJASes1qmowMudzGk")
-MODEL = "gemini-2.5-flash"
+        if current:
+            chunks.append(" ".join(current))
+        return chunks
 
+    def ingest(self, text):
+        self.chunks = self.chunk_text(text)
+        if not self.chunks:
+            print("Warning: No text chunks created.")
+            return
 
+        embeddings = self.embed_model.encode(self.chunks, convert_to_numpy=True).astype("float32")
+        dim = embeddings.shape[1]
+        self.index = faiss.IndexFlatL2(dim)
+        self.index.add(embeddings)
+        print(f"Index built with {len(self.chunks)} chunks.")
 
-INDEX_PATH = "faiss_store/index.faiss" 
-META_PATH = "faiss_store/meta.json"
-CHUNK_PATH = "faiss_store/chunks.json"
+    def semantic_search(self, query, k=3):
+        if self.index is None or not self.chunks:
+            return []
+        q_vec = self.embed_model.encode([query], convert_to_numpy=True).astype("float32")
+        D, I = self.index.search(q_vec, k)
+        candidates = []
+        for dist, idx in zip(D[0], I[0]):
+            if idx < len(self.chunks):
+                candidates.append({
+                    "text": self.chunks[idx],
+                    "distance": float(dist)
+                })
+        if not candidates:
+            return []
+        pairs = [[query, c["text"]] for c in candidates]
+        scores = self.reranker.predict(pairs)
+        for c, s in zip(candidates, scores):
+            c["score"] = float(s)
+        candidates.sort(key=lambda x: x["score"], reverse=True)
+        return candidates[:k]
 
-print("Loading FAISS index + metadata...")
-index = faiss.read_index(INDEX_PATH)
-
-with open(META_PATH, "r") as f:
-    metadata = json.load(f)
-
-with open(CHUNK_PATH, "r") as f:
-    all_chunks = json.load(f)
-
-
-
-embed_model = SentenceTransformer("all-MiniLM-L6-v2") 
-
-def embed_query(text):
-    """Embed a user query for FAISS search."""
-    return embed_model.encode([text], convert_to_numpy=True).astype("float32")
-
-
-
-def semantic_search(query, k=4):
-    q_vec = embed_query(query)
-    D, I = index.search(q_vec, k)
-
-    chunks = [all_chunks[idx] for idx in I[0]]
-
-    
-    if D[0][0] > 1.0:   
-        return None
-
-    useful_chunks = [c for c in chunks if len(c.strip()) > 50]
-
-    return useful_chunks if useful_chunks else None
-
-
-
-
-def generate_answer(query, retrieved_chunks):
-
-    
-    if not retrieved_chunks:
-        response = client.models.generate_content(
-            model=MODEL,
-            contents=f"""
-No relevant context was found.
-
-Answer the question normally using your general knowledge:
-Question: {query}
-"""
-        )
-        return response.text.strip()
-
-    
-    context = "\n\n".join(retrieved_chunks)
-
-    rag_prompt = f"""
-You have been given context passages.
-
-Rules:
-1. If the answer CAN be found in the context, use only the context.
-2. If the context does NOT contain the answer, IGNORE the context and answer normally.
-3. Do NOT hallucinate contradictory facts.
-
-Context:
-{context}
-
-Question: {query}
-
-Answer:
-"""
-
-    response = client.models.generate_content(
-        model=MODEL,
-        contents=rag_prompt
-    )
-
-    return response.text.strip()
-
-
-if __name__ == "__main__":
-    print("RAG System Ready — Powered by Gemini 2.5 Flash\n")
-
-    while True: 
-        query = input("\nAsk: ").strip()
-
-        if query.lower() in ["exit", "quit", "q"]:
-            break
-
-        retrieved = semantic_search(query)
-
-        answer = generate_answer(query, retrieved)
-
-        print("\n--- Final Answer ---")
-        print(answer)
+    def generate_answer(self, query, retrieved_chunks):
+        if not retrieved_chunks:
+            return "I couldn't find any relevant information in the document."
+        context = "\n\n".join([c["text"] for c in retrieved_chunks])
+        return f"Based on the document, here is the relevant information:\n\n{context}"
