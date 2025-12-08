@@ -5,14 +5,9 @@
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Neuro Ranger</title>
-
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -27,15 +22,9 @@
             surface: "#0A0A0A",
             nav_bg: "#111111"
           },
-          fontFamily: {
-            display: ["Space Grotesk", "sans-serif"]
-          },
-          borderRadius: {
-            DEFAULT: "0px"
-          },
-          animation: {
-            "spin-slow": "spin 2.5s linear infinite"
-          },
+          fontFamily: { display: ["Space Grotesk", "sans-serif"] },
+          borderRadius: { DEFAULT: "0px" },
+          animation: { "spin-slow": "spin 2.5s linear infinite" },
           boxShadow: {
             "glow-accent": "0 0 20px 0 rgba(0,191,255,0.6)",
             "glow-primary": "0 0 20px 0 rgba(255,215,0,0.6)"
@@ -46,60 +35,22 @@
   </script>
 
   <style>
-    body {
-      min-height: 100dvh;
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-    }
+    body { min-height: 100dvh; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
   </style>
 </head>
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
-
-  <div id="profile-bar"
-    class="fixed top-4 right-4 hidden items-center gap-3 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-white z-40">
-    <span class="material-symbols-outlined text-accent">person</span>
-    <span id="profile-email" class="text-sm"></span>
-
-    <button id="logout-btn"
-      class="bg-accent text-black text-sm font-bold px-3 py-1 rounded hover:brightness-110 transition">
-      Logout
-    </button>
-  </div>
-
-  <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-surface p-8 rounded-lg w-96 flex flex-col gap-4">
-      <h2 class="text-2xl font-bold text-white text-center">Login</h2>
-
-      <input id="login-email" type="email" placeholder="Email" class="p-2 rounded bg-black/20 text-white" />
-
-      <input id="login-password" type="password" placeholder="Password" class="p-2 rounded bg-black/20 text-white" />
-
-      <div class="flex justify-between gap-2">
-        <button id="login-btn"
-          class="flex-1 bg-accent text-black font-bold py-2 rounded hover:brightness-110 transition">
-          Login
-        </button>
-
-        <button id="signup-btn"
-          class="flex-1 bg-primary text-black font-bold py-2 rounded hover:brightness-110 transition">
-          Signup
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
+    
     <aside class="flex flex-col items-center gap-8 bg-nav_bg p-4 border-r border-white/10 min-h-full">
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
       </div>
-
       <nav class="flex flex-col items-center gap-6">
-        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="index.html" id="nav-upload">
+        <a class="nav-item text-accent relative transition-colors" href="index.html" id="nav-upload">
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
+          <div class="absolute -left-6 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent"></div>
         </a>
 
         <a class="nav-item text-white/60 hover:text-accent transition-colors" href="summary.html" id="nav-summary">
@@ -116,110 +67,40 @@
       </nav>
     </aside>
 
-    <main class="flex-1 flex items-center justify-center p-6" style="
-        background-image: url('./1.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-      ">
-      <div id="drop-zone"
-        class="flex flex-col items-center justify-center gap-6 border-2 border-dashed border-accent w-full max-w-[600px] h-[60vh] bg-black/50 px-12 py-12 cursor-pointer shadow-glow-accent rounded-lg transition">
+    <main class="flex-1 flex items-center justify-center p-6" style="background-image: url('./1.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+      <div id="drop-zone" class="flex flex-col items-center justify-center gap-6 border-2 border-dashed border-accent w-full max-w-[600px] h-[60vh] bg-black/50 px-12 py-12 cursor-pointer shadow-glow-accent rounded-lg transition">
         <div class="text-accent flex items-center justify-center">
           <span class="material-symbols-outlined !text-6xl">cloud_upload</span>
         </div>
-
         <div class="flex flex-col items-center gap-2">
           <p class="text-white text-2xl font-bold text-center">Drag & Drop Files Here</p>
           <p class="text-white/70 text-sm text-center">Supports PDF, DOCX, TXT | Max 100MB</p>
         </div>
-
         <div id="upload-block" class="flex flex-col items-center gap-4">
-          <button id="select-btn"
-            class="flex items-center justify-center rounded h-14 px-8 bg-accent text-surface font-bold hover:brightness-110 transition">
+          <button id="select-btn" class="flex items-center justify-center rounded h-14 px-8 bg-accent text-surface font-bold hover:brightness-110 transition">
             Select File
           </button>
         </div>
-
         <input id="file-input" type="file" class="hidden" />
-
+        
         <div id="loader" class="hidden flex flex-col items-center gap-4 mt-4">
           <div class="relative">
             <div class="w-14 h-14 border-4 border-accent animate-spin rounded-full border-t-transparent"></div>
-            <div
-              class="absolute inset-0 w-14 h-14 border-4 border-primary animate-spin-slow rounded-full border-b-transparent">
-            </div>
+            <div class="absolute inset-0 w-14 h-14 border-4 border-primary animate-spin-slow rounded-full border-b-transparent"></div>
           </div>
 
           <p class="text-white/70 text-sm">Processing...</p>
         </div>
 
-        <button id="summarize-btn"
-          class="hidden mt-4 flex items-center justify-center rounded h-14 px-8 bg-primary text-black font-bold hover:brightness-110 transition">
+        <button id="summarize-btn" class="hidden mt-4 flex items-center justify-center rounded h-14 px-8 bg-primary text-black font-bold hover:brightness-110 transition">
           Summarize
         </button>
       </div>
     </main>
   </div>
 
-  <script type="module">
-    // ----------------- Firebase Setup -----------------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9b4TGNUJAZvxV0EL_IN74OSOTTYrOhCU",
-      authDomain: "runtime-terror-3e0b9.firebaseapp.com",
-      projectId: "runtime-terror-3e0b9",
-      storageBucket: "runtime-terror-3e0b9.firebasestorage.app",
-      messagingSenderId: "40107406256",
-      appId: "1:40107406256:web:9fa1ba1bb337f72ab95c75",
-      measurementId: "G-FJXDGVSNW6"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const loginModal = document.getElementById("login-modal");
-    const loginBtn = document.getElementById("login-btn");
-    const signupBtn = document.getElementById("signup-btn");
-    const emailInput = document.getElementById("login-email");
-    const passwordInput = document.getElementById("login-password");
-    const profileBar = document.getElementById("profile-bar");
-    const profileEmail = document.getElementById("profile-email");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        loginModal.classList.add("hidden");
-        profileBar.classList.remove("hidden");
-        profileEmail.textContent = user.email;
-      } else {
-        loginModal.classList.remove("hidden");
-        profileBar.classList.add("hidden");
-        profileEmail.textContent = "";
-      }
-    });
-
-    loginBtn.addEventListener("click", () => {
-      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .catch(err => alert(err.message));
-    });
-
-    signupBtn.addEventListener("click", () => {
-      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(() => alert("Signup successful! Login now."))
-        .catch(err => alert(err.message));
-    });
-
-    logoutBtn.addEventListener("click", () => signOut(auth));
-
-    // ----------------- Upload / Drag & Drop -----------------
+  <script>
+    // Define DOM elements
     const selectBtn = document.getElementById("select-btn");
     const fileInput = document.getElementById("file-input");
     const uploadBlock = document.getElementById("upload-block");
@@ -234,10 +115,10 @@
       localStorage.setItem("uploadedFileName", file.name);
       localStorage.setItem("uploadedFileDate", new Date().toLocaleString());
 
-      // Hide upload area, show loader
+      // Update UI
       uploadBlock.classList.add("hidden");
       loader.classList.remove("hidden");
-      summarizeBtn.classList.add("hidden"); // hide summarize until backend finishes
+      summarizeBtn.classList.add("hidden"); 
 
       const formData = new FormData();
       formData.append("file", file);
@@ -248,15 +129,12 @@
           body: formData
         });
 
-        if (!response.ok) {
-          throw new Error("Backend error: " + response.status);
-        }
+        if (!response.ok) throw new Error("Backend error: " + response.status);
 
-        // Optional: parse backend response
         const resData = await response.json();
         console.log("Backend response:", resData);
 
-        // Show summarize button
+        // Success state
         loader.classList.add("hidden");
         summarizeBtn.classList.remove("hidden");
 
@@ -268,20 +146,17 @@
       }
     }
 
-    // Click file input
+    // Event Listeners
     selectBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", e => handleFile(e.target.files[0]));
 
-    // Drag & Drop
     dropZone.addEventListener("dragover", e => {
       e.preventDefault();
       dropZone.classList.add("border-white");
     });
-
     dropZone.addEventListener("dragleave", () => {
       dropZone.classList.remove("border-white");
     });
-
     dropZone.addEventListener("drop", e => {
       e.preventDefault();
       dropZone.classList.remove("border-white");
@@ -290,6 +165,9 @@
 
     // Summarize button click
     summarizeBtn.addEventListener("click", () => {
+      // Redirect to summary page (no ID means it will load latest)
       window.location.href = "summary.html";
     });
   </script>
+</body>
+</html>

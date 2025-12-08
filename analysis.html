@@ -4,33 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>Doc-Sage Intel Console - AI Dashboard</title>
+  <title>Analysis Dashboard</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com" rel="preconnect" />
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet" />
-
-  <style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-
-    .glowing-border {
-      box-shadow: 0 0 2px 0px #ffd900, 0 0 4px 0px #ffd90033, 0 0 8px 0px #ffd90022;
-    }
-
-    .glowing-border-blue {
-      box-shadow: 0 0 2px 0px #00BFFF, 0 0 4px 0px #00BFFF33, 0 0 8px 0px #00BFFF22;
-    }
-
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -50,11 +27,16 @@
             "nav-bg": "#111111"
           },
           fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
-          borderRadius: { "DEFAULT": "12px", "lg": "16px", "xl": "20px", "full": "9999px" },
+          borderRadius: { "DEFAULT": "12px" },
         },
       },
     }
   </script>
+  <style>
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .glowing-border { box-shadow: 0 0 2px 0px #ffd900, 0 0 4px 0px #ffd90033, 0 0 8px 0px #ffd90022; }
+    body { min-height: 100dvh; }
+  </style>
 </head>
 
 <body class="bg-background-dark font-display flex flex-col min-h-screen">
@@ -89,166 +71,122 @@
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
       </div>
-
       <nav class="flex flex-col items-center gap-6">
-        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="index.html" id="nav-upload">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="index.html">
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
         </a>
-        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="summary.html" id="nav-summary">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="summary.html">
           <span class="material-symbols-outlined !text-3xl">description</span>
         </a>
-        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="history.html" id="nav-history">
+        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="history.html">
           <span class="material-symbols-outlined !text-3xl">history</span>
         </a>
-        <a class="nav-item text-white/60 hover:text-accent transition-colors" href="analysis.html" id="nav-analysis">
+        <a class="nav-item text-accent relative transition-colors" href="analysis.html">
           <span class="material-symbols-outlined !text-3xl">analytics</span>
+          <div class="absolute -left-6 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent"></div>
         </a>
       </nav>
     </aside>
 
     <main class="flex-1 space-y-6 p-4 text-text-primary">
-
+      
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
           <p class="text-sm text-text-secondary">Total Documents</p>
-          <p class="text-2xl font-bold text-primary">1,482</p>
+          <p id="total-docs" class="text-2xl font-bold text-primary">...</p>
         </div>
         <div class="flex flex-col gap-1.5 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
-          <p class="text-sm text-text-secondary">Total Tags</p>
-          <p class="text-2xl font-bold text-primary">2,109</p>
+          <p class="text-sm text-text-secondary">Active Categories</p>
+          <p id="unique-cats" class="text-2xl font-bold text-primary">...</p>
         </div>
       </div>
 
       <div class="flex flex-col gap-4 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
-        <p class="text-base font-bold">Tag Frequency</p>
-        <p class="text-sm text-text-secondary">Analysis from last 30 days</p>
-        <div class="grid min-h-[160px] gap-x-4 gap-y-4 grid-cols-[auto_1fr] items-center py-2">
-          <p class="text-[13px] text-text-secondary">AI Research</p>
-          <div class="h-2 rounded-full bg-primary/20">
-            <div class="bg-primary h-2 rounded-full" style="width: 70%;"></div>
-          </div>
-          <p class="text-[13px] text-text-secondary">Project Phoenix</p>
-          <div class="h-2 rounded-full bg-primary/20">
-            <div class="bg-primary h-2 rounded-full" style="width: 60%;"></div>
-          </div>
-          <p class="text-[13px] text-text-secondary">Q3 Financials</p>
-          <div class="h-2 rounded-full bg-primary/20">
-            <div class="bg-primary h-2 rounded-full" style="width: 80%;"></div>
-          </div>
-          <p class="text-[13px] text-text-secondary">Competitor</p>
-          <div class="h-2 rounded-full bg-primary/20">
-            <div class="bg-primary h-2 rounded-full" style="width: 85%;"></div>
-          </div>
+        <p class="text-base font-bold">Category Distribution</p>
+        <p class="text-sm text-text-secondary">Frequency of document types</p>
+        
+        <div id="stats-grid" class="grid min-h-[160px] gap-x-4 gap-y-4 grid-cols-[auto_1fr] items-center py-2">
+            <div class="col-span-2 flex items-center gap-2 text-white/50">
+                <div class="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                Loading statistics...
+            </div>
         </div>
       </div>
-
-      <div class="flex flex-col rounded-xl bg-surface-dark border border-border-color glowing-border">
-        <div class="flex flex-col gap-2 p-4">
-          <p class="text-base font-bold tracking-[-0.015em]">Embeddings Cluster</p>
-          <p class="text-sm text-text-secondary">Visualizing semantic relationships.</p>
-        </div>
-        <div class="w-full aspect-video bg-cover bg-center"
-          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4o331_8MjvkZZzXzRZ3ZSpywsE8XGUiYAXRA2NpnvDismaWLrPXAsEa9WlAEp-9YqwlIIZYy7_4Z8p_CHY4By_JLztG9JKFnaHtJM3rnHOblJofMGlr2ny5ZUmnOIptdtD1cj9qDyCiMzMHGgk_RTZlbfiKSYzUtO2aq8A8qQgapzgUTwE5aJlJ4gut_74EYY1Z_II7BEB5A-ISeWPKPDb5Yqfm3Zui-6We-lA0i934umScwbmIeeE2P_GjNNdr2nxtM2r6hf2akd");'>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <h3 class="text-lg font-bold">Recent Uploads</h3>
-        <div class="flex space-x-4 overflow-x-auto pb-2 -mx-4 px-4">
-
-          <div
-            class="flex w-40 shrink-0 flex-col gap-2 rounded-lg bg-surface-dark p-3 border border-border-color glowing-border">
-            <span class="material-symbols-outlined text-secondary text-2xl">description</span>
-            <p class="font-semibold text-sm line-clamp-2">Q4 Market Analysis.pdf</p>
-            <p class="text-xs text-text-secondary">2m ago</p>
-          </div>
-
-          <div
-            class="flex w-40 shrink-0 flex-col gap-2 rounded-lg bg-surface-dark p-3 border border-border-color glowing-border">
-            <span class="material-symbols-outlined text-secondary text-2xl">description</span>
-            <p class="font-semibold text-sm line-clamp-2">Competitor Strategy Deck.pptx</p>
-            <p class="text-xs text-text-secondary">1h ago</p>
-          </div>
-
-          <div
-            class="flex w-40 shrink-0 flex-col gap-2 rounded-lg bg-surface-dark p-3 border border-border-color glowing-border">
-            <span class="material-symbols-outlined text-secondary text-2xl">description</span>
-            <p class="font-semibold text-sm line-clamp-2">Project Phoenix - Sprint Notes.docx</p>
-            <p class="text-xs text-text-secondary">3h ago</p>
-          </div>
-
-        </div>
-      </div>
-
-      <button
-        class="fixed bottom-24 right-4 z-10 flex items-center gap-2 rounded-full bg-secondary py-3 px-4 text-background-dark font-bold shadow-lg glowing-border-blue">
-        <span class="material-symbols-outlined !text-xl">hub</span>
-        Cross-Doc Summary
-      </button>
 
     </main>
   </div>
 
   <script>
-    const page = "analysis.html";
-    const el = document.getElementById("nav-analysis");
-    if (el) {
-      el.classList.remove("text-white/60");
-      el.classList.add("text-accent", "relative");
-      const bar = document.createElement("div");
-      bar.className = "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
-      el.appendChild(bar);
+    async function loadAnalysis() {
+        const totalDocsEl = document.getElementById("total-docs");
+        const uniqueCatsEl = document.getElementById("unique-cats");
+        const gridEl = document.getElementById("stats-grid");
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/analysis");
+            if (!response.ok) throw new Error("Failed to load analysis");
+            
+            const data = await response.json();
+
+            // 1. Update Top Stats
+            totalDocsEl.textContent = data.total_documents;
+            uniqueCatsEl.textContent = data.unique_categories;
+
+            // 2. Generate Progress Bars
+            gridEl.innerHTML = ""; // Clear loader
+            
+            const counts = data.category_counts;
+            const categories = Object.keys(counts);
+            
+            if (categories.length === 0) {
+                gridEl.innerHTML = `<p class="col-span-2 text-white/50 italic">No data available.</p>`;
+                return;
+            }
+
+            // Find max value to calculate percentage relative to the highest count
+            const maxCount = Math.max(...Object.values(counts));
+
+            categories.forEach(cat => {
+                const count = counts[cat];
+                // Calculate width percentage relative to the highest category count
+                const widthPercent = (count / maxCount) * 100;
+                
+                // Label
+                const label = document.createElement("p");
+                label.className = "text-[13px] text-text-secondary text-right";
+                label.textContent = `${cat} (${count})`;
+                
+                // Bar Container
+                const barContainer = document.createElement("div");
+                barContainer.className = "h-2 rounded-full bg-primary/20 w-full";
+                
+                // Bar Fill
+                const barFill = document.createElement("div");
+                barFill.className = "bg-primary h-2 rounded-full transition-all duration-1000 ease-out";
+                barFill.style.width = "0%"; // Start at 0 for animation
+
+                barContainer.appendChild(barFill);
+                
+                // Append to grid
+                gridEl.appendChild(label);
+                gridEl.appendChild(barContainer);
+
+                // Trigger animation
+                setTimeout(() => {
+                    barFill.style.width = `${widthPercent}%`;
+                }, 100);
+            });
+
+        } catch (err) {
+            console.error(err);
+            gridEl.innerHTML = `<p class="col-span-2 text-red-400">Error loading data.</p>`;
+            totalDocsEl.textContent = "-";
+            uniqueCatsEl.textContent = "-";
+        }
     }
-  </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9b4TGNUJAZvxV0EL_IN74OSOTTYrOhCU",
-      authDomain: "runtime-terror-3e0b9.firebaseapp.com",
-      projectId: "runtime-terror-3e0b9",
-      storageBucket: "runtime-terror-3e0b9.firebasestorage.app",
-      messagingSenderId: "40107406256",
-      appId: "1:40107406256:web:9fa1ba1bb337f72ab95c75"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const loginModal = document.getElementById("login-modal");
-    const loginBtn = document.getElementById("login-btn");
-    const signupBtn = document.getElementById("signup-btn");
-    const emailInput = document.getElementById("login-email");
-    const passwordInput = document.getElementById("login-password");
-    const profileBar = document.getElementById("profile-bar");
-    const profileEmail = document.getElementById("profile-email");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginModal.classList.add("hidden");
-        profileBar.classList.remove("hidden");
-        profileEmail.textContent = user.email;
-      } else {
-        profileBar.classList.add("hidden");
-        loginModal.classList.remove("hidden");
-        profileEmail.textContent = "";
-      }
-    });
-
-    loginBtn?.addEventListener("click", () =>
-      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .catch(err => alert(err.message))
-    );
-
-    signupBtn?.addEventListener("click", () =>
-      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(() => alert("Signup successful! Login now."))
-    );
-
-    logoutBtn?.addEventListener("click", () => signOut(auth));
+    // Run on load
+    loadAnalysis();
   </script>
 
 </body>
