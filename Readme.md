@@ -1,5 +1,9 @@
-# Neuro Ranger 
+<center>><h1>Neuro Ranger</h1>
+ 
 ## An AI-Powered RAG Knowledge Engine
+[![Live Demo](https://img.shields.io/badge/Neuro--Ranger-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://shreyansh-kushw.github.io/Neuro-Ranger/)  
+
+</center>
 
 A smart Retrieval-Augmented Generation (RAG) system that processes documents, performs OCR, creates concise summaries, and enables high-accuracy semantic search across large unstructured datasets.
 
@@ -19,8 +23,9 @@ The Yellow Ranger faces critical information overload from thousands of unorgani
 - ⚡ Backend powered by FastAPI
 
 ## 🛠️ Tech Stack
+<center>
 
-### 🔹 Backend
+### 🔹Backend
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 
@@ -38,7 +43,7 @@ The Yellow Ranger faces critical information overload from thousands of unorgani
 ![PyMuPDF](https://img.shields.io/badge/PyMuPDF-008000?logo=python&logoColor=white)
 ![EasyOCR](https://img.shields.io/badge/EasyOCR-FFDD00?logo=python&logoColor=black)
 
-
+</center>
 ## 🏗️ System Architecture
 
 1. **User Interface (Frontend)**
@@ -117,7 +122,10 @@ uvicorn main:app --reload
 [![Live Demo](https://img.shields.io/badge/Neuro--Ranger-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://shreyansh-kushw.github.io/Neuro-Ranger/)
 
 ## 🖼️ Screenshots
-(Add image links)
+![Home Page](assets/home.png)
+![Summary Page](assets/summary.png)
+![History Page](assets/history.png)
+![Analytics Page](assets/analytics.png)
 
 ## ⚠️ Error Handling
 - OCR fallback
@@ -130,10 +138,10 @@ uvicorn main:app --reload
 - OCR via pymupdf/EasyOCR
 
 ## 👥 Team Members & Responsibilities
-**Shreyansh Kushwaha** - Backend developement, text extraction logics and gemini integration  
+**Shreyansh Kushwaha** - Backend developement, improvement on semantic search and readme.
 **Aayush Thakur** - UI/UX and frontend designing and deployement  
 **Prateek Rastogi** - Semantic search implementation  
-**Aayansh Niranjan** - Integrating the whole project using **FastAPI**  
+**Aayansh Niranjan** - Integrating the whole project using **FastAPI**  and Readme creation
 
 ## 🔮 Future Improvements
 - Multi-document reasoning, analysis and comparison
