@@ -5,13 +5,9 @@
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>History</title>
-
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -20,11 +16,11 @@
         extend: {
           colors: {
             primary: "#ffd900",
-            "background-light": "#f8f8f5",
-            "background-dark": "#1C1C1C",
+            background_light: "#f8f8f5",
+            background_dark: "#1C1C1C",
             accent: "#00BFFF",
             surface: "#0A0A0A",
-            "nav-bg": "#111111"
+            nav_bg: "#111111"
           },
           fontFamily: { display: ["Space Grotesk", "sans-serif"] },
           borderRadius: { DEFAULT: "0px" },
@@ -36,52 +32,19 @@
       }
     };
   </script>
-
   <style>
-    body {
-      min-height: 100dvh;
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-    }
+    body { min-height: 100dvh; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
   </style>
 </head>
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
-
-  <div id="profile-bar"
-    class="fixed top-4 right-4 hidden items-center gap-3 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-white z-50">
-    <span class="material-symbols-outlined text-accent">person</span>
-    <span id="profile-email" class="text-sm"></span>
-    <button id="logout-btn"
-      class="bg-accent text-black text-sm font-bold px-3 py-1 rounded hover:brightness-110 transition">Logout</button>
-  </div>
-
-  <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-surface p-8 rounded-lg w-96 flex flex-col gap-4">
-      <h2 class="text-2xl font-bold text-white text-center">Login</h2>
-
-      <input id="login-email" type="email" placeholder="Email" class="p-2 rounded bg-black/20 text-white">
-      <input id="login-password" type="password" placeholder="Password" class="p-2 rounded bg-black/20 text-white">
-
-      <div class="flex justify-between gap-2">
-        <button id="login-btn"
-          class="flex-1 bg-accent text-black font-bold py-2 rounded hover:brightness-110 transition">Login</button>
-        <button id="signup-btn"
-          class="flex-1 bg-primary text-black font-bold py-2 rounded hover:brightness-110 transition">Signup</button>
-      </div>
-    </div>
-  </div>
-
-
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
-    <aside class="flex flex-col items-center gap-8 bg-nav-bg p-4 border-r border-white/10 min-h-full">
+    <aside class="flex flex-col items-center gap-8 bg-nav_bg p-4 border-r border-white/10 min-h-full">
       <div class="text-primary flex items-center justify-center">
         <span class="material-symbols-outlined !text-4xl">api</span>
       </div>
-
       <nav class="flex flex-col items-center gap-6">
         <a class="text-white/60 hover:text-accent transition-colors" href="index.html" id="nav-upload">
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
@@ -89,8 +52,9 @@
         <a class="text-white/60 hover:text-accent transition-colors" href="summary.html" id="nav-summary">
           <span class="material-symbols-outlined !text-3xl">description</span>
         </a>
-        <a class="text-white/60 hover:text-accent transition-colors" href="history.html" id="nav-history">
+        <a class="text-accent relative transition-colors" href="history.html" id="nav-history">
           <span class="material-symbols-outlined !text-3xl">history</span>
+          <div class="absolute -left-6 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent"></div>
         </a>
         <a class="text-white/60 hover:text-accent transition-colors" href="analysis.html" id="nav-analysis">
           <span class="material-symbols-outlined !text-3xl">analytics</span>
@@ -103,149 +67,78 @@
       <p class="text-white/70 mb-6">Your previous uploads and summaries...</p>
 
       <div id="history-container" class="space-y-4">
-        <div id="history-loader" class="flex items-center gap-3">
-          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-white/70">Loading history...</p>
-        </div>
+          <div id="history-loader" class="flex items-center gap-3">
+              <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+              <p class="text-white/70">Loading history...</p>
+          </div>
       </div>
-
     </main>
-
   </div>
 
   <script>
-    const page = window.location.pathname.split("/").pop();
-    const map = {
-      "index.html": "nav-upload",
-      "summary.html": "nav-summary",
-      "history.html": "nav-history",
-      "analysis.html": "nav-analysis",
-    };
-    const activeId = map[page];
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      el.classList.remove("text-white/60");
-      el.classList.add("text-accent", "relative");
-
-      const bar = document.createElement("div");
-      bar.className =
-        "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
-      el.appendChild(bar);
-    }
-  </script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9b4TGNUJAZvxV0EL_IN74OSOTTYrOhCU",
-      authDomain: "runtime-terror-3e0b9.firebaseapp.com",
-      projectId: "runtime-terror-3e0b9",
-      storageBucket: "runtime-terror-3e0b9.firebasestorage.app",
-      messagingSenderId: "40107406256",
-      appId: "1:40107406256:web:9fa1ba1bb337f72ab95c75"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const loginModal = document.getElementById("login-modal");
-    const loginBtn = document.getElementById("login-btn");
-    const signupBtn = document.getElementById("signup-btn");
-    const emailInput = document.getElementById("login-email");
-    const passwordInput = document.getElementById("login-password");
-    const profileBar = document.getElementById("profile-bar");
-    const profileEmail = document.getElementById("profile-email");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginModal.classList.add("hidden");
-        profileBar.classList.remove("hidden");
-        profileEmail.textContent = user.email;
-      } else {
-        profileBar.classList.add("hidden");
-        loginModal.classList.remove("hidden");
-        profileEmail.textContent = "";
-      }
-    });
-
-    loginBtn?.addEventListener("click", () =>
-      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value).catch(err => alert(err.message))
-    );
-
-    signupBtn?.addEventListener("click", () =>
-      createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(() => alert("Signup successful! Login now."))
-    );
-
-    logoutBtn?.addEventListener("click", () => signOut(auth));
     const historyContainer = document.getElementById("history-container");
     const loader = document.getElementById("history-loader");
 
     async function loadHistory() {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/history");
-        if (!response.ok) throw new Error("Failed to load history");
+        try {
+            const response = await fetch("http://127.0.0.1:8000/history");
+            if (!response.ok) throw new Error("Failed to load history");
+            
+            const data = await response.json();
+            
+            // Clear content
+            historyContainer.innerHTML = "";
 
-        const data = await response.json();
+            // Sort keys descending (newest first)
+            const keys = Object.keys(data).reverse();
 
-        // Clear loader
-        historyContainer.innerHTML = "";
+            if (keys.length === 0) {
+                historyContainer.innerHTML = `<p class="text-white/50 italic">No history found.</p>`;
+                return;
+            }
 
-        const keys = Object.keys(data).reverse(); // Show newest first (DOC_003 before DOC_001)
+            keys.forEach(key => {
+                const item = data[key];
+                const card = document.createElement("div");
+                card.className = "p-4 bg-nav_bg border border-white/10 rounded hover:border-accent/50 transition duration-300";
+                
+                // Truncate summary for preview
+                const preview = item.summary ? item.summary.substring(0, 100) + "..." : "No summary available.";
 
-        if (keys.length === 0) {
-          historyContainer.innerHTML = `<p class="text-white/50 italic">No history found.</p>`;
-          return;
-        }
-
-        keys.forEach(key => {
-          const item = data[key];
-          const card = document.createElement("div");
-          card.className = "p-4 bg-nav-bg border border-white/10 rounded hover:border-accent/50 transition duration-300";
-
-          card.innerHTML = `
+                card.innerHTML = `
                   <div class="flex justify-between items-start">
-                    <div>
-                        <h2 class="text-primary text-xl font-semibold">${item.filename}</h2>
-                        <div class="flex gap-4 mt-1 text-sm text-white/60">
-                            <span>ID: ${key}</span>
-                            <span>•</span>
-                            <span>Date: ${item.date}</span>
+                    <div class="w-full">
+                        <div class="flex justify-between items-center mb-2">
+                             <h2 class="text-primary text-xl font-semibold">${item.filename}</h2>
+                             <span class="text-xs text-white/40 border border-white/10 px-2 py-1 rounded">${key}</span>
+                        </div>
+                        <p class="text-white/60 text-sm mb-3">${preview}</p>
+                        <div class="flex gap-4 text-xs text-white/50 uppercase tracking-wider">
+                            <span>${item.date}</span>
                             <span>•</span>
                             <span class="text-accent">${item.category || 'Uncategorized'}</span>
                         </div>
                     </div>
                   </div>
-                  <button onclick="viewSummary('${key}')" class="mt-4 px-4 py-2 rounded bg-accent text-black font-semibold shadow-glow-accent hover:brightness-110 transition">
-                    View Summary
+                  <button onclick="viewSummary('${key}')" class="mt-4 px-4 py-2 rounded bg-accent text-black font-semibold text-sm hover:brightness-110 transition shadow-glow-accent">
+                    View Full Summary
                   </button>
                 `;
-          historyContainer.appendChild(card);
-        });
+                historyContainer.appendChild(card);
+            });
 
-      } catch (err) {
-        historyContainer.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`;
-      }
+        } catch (err) {
+            historyContainer.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`;
+        }
     }
 
-    // Function to redirect to summary page with ID parameter
-    window.viewSummary = function (docId) {
-      window.location.href = `summary.html?id=${docId}`;
+    // Redirect to summary page with ID
+    window.viewSummary = function(docId) {
+        window.location.href = `summary.html?id=${docId}`;
     };
 
     // Load on start
     loadHistory();
   </script>
-
 </body>
-
 </html>
