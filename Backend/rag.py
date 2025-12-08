@@ -1,6 +1,12 @@
 import faiss
 import nltk
+import os
+
 from sentence_transformers import SentenceTransformer, CrossEncoder
+from google import genai
+from dotenv import load_dotenv
+from pathlib import Path
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -14,6 +20,13 @@ class RAGSystem:
         self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
         self.index = None
         self.chunks = []
+
+        env_path = Path(__file__).parent / "API_key.env"
+        load_dotenv(env_path)
+
+        self.api_key = os.getenv("GEMINI_API_KEY")
+
+        self.client = genai.Client(api_key=self.api_key)
         print("Models loaded.")
  
     def chunk_text(self, text, size=300, overlap=50):

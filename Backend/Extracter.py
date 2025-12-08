@@ -106,7 +106,7 @@ class TextExtracter:
                             3. Do not add headings or labels.
                             4. Preserve the original meaning while shortening the content.
                             5. Ensure the summary is factual, coherent, and stays within the context of the document.
-                            6. Also provide bullet points at the end of the summary. You can provide labels for these bullet points.
+                            6. Also provide bullet points at the end of the summary. You can provide labels for these bullet points, and enclose them within <b> and </b> tags.
                             7. Enclose the words to be bolded inside <b> </b> tags.
 
                             Now summarize the following document :
