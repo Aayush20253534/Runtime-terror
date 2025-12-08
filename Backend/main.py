@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import datetime
+import json
 from Extracter import TextExtracter
 from rag import RAGSystem
 
@@ -25,6 +26,16 @@ def process_file_backend(file_path: str):
     result = extractor.handleFiles(file_path) 
     return result
 
+def get_database_data():
+    db_path = "Database/data.json"
+    if not os.path.exists(db_path):
+        return {}
+    try:
+        with open(db_path, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+    
 @app.post("/preprocess")
 async def preprocess(file: UploadFile = File(...)):
     global LAST_RESULT
@@ -83,3 +94,15 @@ async def ask(query: str):
     except Exception as e:
         print(f"Error in /ask: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/history")
+async def get_history():
+    data = get_database_data()
+    return data
+
+@app.get("/document/{doc_id}")
+async def get_document(doc_id: str):
+    data = get_database_data()
+    if doc_id not in data:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return data[doc_id]
