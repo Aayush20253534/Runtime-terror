@@ -200,26 +200,48 @@
 
     async function loadSummary() {
       summaryBox.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-          <p class="text-white/70 text-sm">Loading summary...</p>
-        </div>`;
+    <div class="flex items-center gap-3">
+      <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-white/70 text-sm">Loading summary...</p>
+    </div>`;
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/summary");
+        // 1. Check for URL Parameter (e.g., summary.html?id=DOC_001)
+        const urlParams = new URLSearchParams(window.location.search);
+        const docId = urlParams.get('id');
+
+        let fetchUrl = "http://127.0.0.1:8000/summary"; // Default: latest upload
+
+        if (docId) {
+          fetchUrl = `http://127.0.0.1:8000/document/${docId}`;
+        }
+
+        // 2. Fetch Data
+        const response = await fetch(fetchUrl);
         if (!response.ok) throw new Error("Backend error " + response.status);
 
         const data = await response.json();
-        const summary = data.summary || "No summary found.";
-        const category = data.category || "Unknown";
-        const backendDate = data.date || "Unknown";
 
-        fileDateEl.textContent = "Processed On: " + backendDate;
+        // 3. Handle data structure differences
+        // /summary returns { summary: "...", category: "..." }
+        // /document/{id} returns { filename: "...", summary: "...", category: "..." }
+
+        const summaryText = data.summary || "No summary found.";
+        const category = data.category || "Unknown";
+        const dateStr = data.date || "Unknown";
+        const filename = data.filename || localStorage.getItem("uploadedFileName") || "Unknown File";
+
+        // Update UI elements
+        fileNameEl.textContent = "File: " + filename;
+        fileDateEl.textContent = "Date: " + dateStr;
 
         summaryBox.innerHTML = `
-          <h2 class="text-xl font-semibold mb-3">Generated Summary</h2>
-          <p class="text-white/60 text-sm mb-4">Category: <span class="text-white font-semibold">${category}</span></p>
-          <p class="text-white/80 whitespace-pre-wrap leading-relaxed">${summary}</p>`;
+      <h2 class="text-xl font-semibold mb-3">Generated Summary</h2>
+      <p class="text-white/60 text-sm mb-4">Category: <span class="text-white font-semibold text-accent">${category}</span></p>
+      <div class="text-white/80 whitespace-pre-wrap leading-relaxed">
+        ${summaryText}
+      </div>`;
+
       } catch (err) {
         summaryBox.innerHTML = `<p class="text-red-400 text-sm">Failed to load summary: ${err.message}</p>`;
       }
@@ -229,46 +251,46 @@
   </script>
 
   <script>
-  const searchInput = document.getElementById("search-input");
-  const searchBtn = document.getElementById("search-btn");
-  const backendBox = document.getElementById("backend-box");
+    const searchInput = document.getElementById("search-input");
+    const searchBtn = document.getElementById("search-btn");
+    const backendBox = document.getElementById("backend-box");
 
-  async function runSearch() {
-    const query = searchInput.value.trim();
-    if (!query) return;
+    async function runSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
 
-    backendBox.innerHTML = `
+      backendBox.innerHTML = `
       <div class="flex items-center gap-3">
         <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
         <p class="text-white/70 text-sm">Thinking...</p>
       </div>
     `;
 
-    try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/ask?query=${encodeURIComponent(query)}`
-      );
-      if (!res.ok) throw new Error("Backend error " + res.status);
-      const data = await res.json();
-      const answer = data.answer || "No answer found.";
-      backendBox.innerHTML = `
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/ask?query=${encodeURIComponent(query)}`
+        );
+        if (!res.ok) throw new Error("Backend error " + res.status);
+        const data = await res.json();
+        const answer = data.answer || "No answer found.";
+        backendBox.innerHTML = `
         <h2 class="text-xl font-semibold mb-3">RAG Search Result</h2>
 
         <p class="text-white/80 whitespace-pre-wrap leading-relaxed mb-4">
           ${answer}
         </p>
       `;
-    } catch (err) {
-      backendBox.innerHTML = `
+      } catch (err) {
+        backendBox.innerHTML = `
         <p class="text-red-400 text-sm">Failed: ${err.message}</p>
       `;
+      }
     }
-  }
-  searchBtn.addEventListener("click", runSearch);
-  searchInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") runSearch();
-  });
-</script>
+    searchBtn.addEventListener("click", runSearch);
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") runSearch();
+    });
+  </script>
 
 </body>
 
