@@ -1,4 +1,4 @@
-<center>><h1>Neuro Ranger</h1>
+<center><h1>Neuro Ranger</h1>
  
 ## An AI-Powered RAG Knowledge Engine
 [![Live Demo](https://img.shields.io/badge/Neuro--Ranger-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://shreyansh-kushw.github.io/Neuro-Ranger/)  
@@ -44,6 +44,7 @@ The Yellow Ranger faces critical information overload from thousands of unorgani
 ![EasyOCR](https://img.shields.io/badge/EasyOCR-FFDD00?logo=python&logoColor=black)
 
 </center>
+
 ## 🏗️ System Architecture
 
 1. **User Interface (Frontend)**
@@ -122,10 +123,9 @@ uvicorn main:app --reload
 [![Live Demo](https://img.shields.io/badge/Neuro--Ranger-Live%20Demo-brightgreen?style=for-the-badge&logo=github)](https://shreyansh-kushw.github.io/Neuro-Ranger/)
 
 ## 🖼️ Screenshots
-![Home Page](assets/home.png)
-![Summary Page](assets/summary.png)
-![History Page](assets/history.png)
-![Analytics Page](assets/analytics.png)
+![Home Page](/assests/home.png)
+![Summary Page](/assests/summary.png)
+![History Page](/assests/history.png)
 
 ## ⚠️ Error Handling
 - OCR fallback
@@ -138,7 +138,7 @@ uvicorn main:app --reload
 - OCR via pymupdf/EasyOCR
 
 ## 👥 Team Members & Responsibilities
-**Shreyansh Kushwaha** - Backend developement, improvement on semantic search and readme.
+**Shreyansh Kushwaha** - Backend developement, improvement on semantic search and readme.  
 **Aayush Thakur** - UI/UX and frontend designing and deployement  
 **Prateek Rastogi** - Semantic search implementation  
 **Aayansh Niranjan** - Integrating the whole project using **FastAPI**  and Readme creation
