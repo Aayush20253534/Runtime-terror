@@ -27,7 +27,7 @@
             "nav-bg": "#111111"
           },
           fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
-          borderRadius: { "DEFAULT": "12px", "lg": "16px", "xl": "20px" },
+          borderRadius: { "DEFAULT": "12px" },
         },
       },
     }
@@ -65,30 +65,105 @@
     </aside>
 
     <main class="flex-1 space-y-6 p-4 text-text-primary">
+      
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col gap-1.5 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
           <p class="text-sm text-text-secondary">Total Documents</p>
-          <p class="text-2xl font-bold text-primary">1,482</p>
+          <p id="total-docs" class="text-2xl font-bold text-primary">...</p>
         </div>
         <div class="flex flex-col gap-1.5 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
-          <p class="text-sm text-text-secondary">Total Tags</p>
-          <p class="text-2xl font-bold text-primary">2,109</p>
+          <p class="text-sm text-text-secondary">Active Categories</p>
+          <p id="unique-cats" class="text-2xl font-bold text-primary">...</p>
         </div>
       </div>
 
       <div class="flex flex-col gap-4 rounded-xl border border-border-color bg-surface-dark p-4 glowing-border">
-        <p class="text-base font-bold">Tag Frequency</p>
-        <p class="text-sm text-text-secondary">Analysis from last 30 days</p>
-        <div class="grid min-h-[160px] gap-x-4 gap-y-4 grid-cols-[auto_1fr] items-center py-2">
-          <p class="text-[13px] text-text-secondary">Operations</p>
-          <div class="h-2 rounded-full bg-primary/20"><div class="bg-primary h-2 rounded-full" style="width: 70%;"></div></div>
-          <p class="text-[13px] text-text-secondary">Security</p>
-          <div class="h-2 rounded-full bg-primary/20"><div class="bg-primary h-2 rounded-full" style="width: 60%;"></div></div>
-          <p class="text-[13px] text-text-secondary">Logistics</p>
-          <div class="h-2 rounded-full bg-primary/20"><div class="bg-primary h-2 rounded-full" style="width: 80%;"></div></div>
+        <p class="text-base font-bold">Category Distribution</p>
+        <p class="text-sm text-text-secondary">Frequency of document types</p>
+        
+        <div id="stats-grid" class="grid min-h-[160px] gap-x-4 gap-y-4 grid-cols-[auto_1fr] items-center py-2">
+            <div class="col-span-2 flex items-center gap-2 text-white/50">
+                <div class="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                Loading statistics...
+            </div>
         </div>
       </div>
+
     </main>
   </div>
+
+  <script>
+    async function loadAnalysis() {
+        const totalDocsEl = document.getElementById("total-docs");
+        const uniqueCatsEl = document.getElementById("unique-cats");
+        const gridEl = document.getElementById("stats-grid");
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/analysis");
+            if (!response.ok) throw new Error("Failed to load analysis");
+            
+            const data = await response.json();
+
+            // 1. Update Top Stats
+            totalDocsEl.textContent = data.total_documents;
+            uniqueCatsEl.textContent = data.unique_categories;
+
+            // 2. Generate Progress Bars
+            gridEl.innerHTML = ""; // Clear loader
+            
+            const counts = data.category_counts;
+            const categories = Object.keys(counts);
+            
+            if (categories.length === 0) {
+                gridEl.innerHTML = `<p class="col-span-2 text-white/50 italic">No data available.</p>`;
+                return;
+            }
+
+            // Find max value to calculate percentage relative to the highest count
+            const maxCount = Math.max(...Object.values(counts));
+
+            categories.forEach(cat => {
+                const count = counts[cat];
+                // Calculate width percentage relative to the highest category count
+                const widthPercent = (count / maxCount) * 100;
+                
+                // Label
+                const label = document.createElement("p");
+                label.className = "text-[13px] text-text-secondary text-right";
+                label.textContent = `${cat} (${count})`;
+                
+                // Bar Container
+                const barContainer = document.createElement("div");
+                barContainer.className = "h-2 rounded-full bg-primary/20 w-full";
+                
+                // Bar Fill
+                const barFill = document.createElement("div");
+                barFill.className = "bg-primary h-2 rounded-full transition-all duration-1000 ease-out";
+                barFill.style.width = "0%"; // Start at 0 for animation
+
+                barContainer.appendChild(barFill);
+                
+                // Append to grid
+                gridEl.appendChild(label);
+                gridEl.appendChild(barContainer);
+
+                // Trigger animation
+                setTimeout(() => {
+                    barFill.style.width = `${widthPercent}%`;
+                }, 100);
+            });
+
+        } catch (err) {
+            console.error(err);
+            gridEl.innerHTML = `<p class="col-span-2 text-red-400">Error loading data.</p>`;
+            totalDocsEl.textContent = "-";
+            uniqueCatsEl.textContent = "-";
+        }
+    }
+
+    // Run on load
+    loadAnalysis();
+  </script>
+
 </body>
 </html>
