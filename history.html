@@ -101,33 +101,14 @@
     <main class="flex-1 p-10 text-white">
       <h1 class="text-3xl font-bold mb-4">History</h1>
       <p class="text-white/70 mb-6">Your previous uploads and summaries...</p>
+      <h1 class="text-3xl font-bold mb-4">History</h1>
+      <p class="text-white/70 mb-6">Your previous uploads and summaries...</p>
 
-      <div class="space-y-4">
-
-        <div class="p-4 bg-nav-bg border border-white/10 rounded">
-          <h2 class="text-primary text-xl font-semibold">File_01.pdf</h2>
-          <p class="text-white/60">Generated: 2 days ago</p>
-          <button class="mt-3 px-4 py-2 rounded bg-accent text-black font-semibold shadow-glow-accent">
-            View Summary
-          </button>
+      <div id="history-container" class="space-y-4">
+        <div id="history-loader" class="flex items-center gap-3">
+          <div class="w-6 h-6 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-white/70">Loading history...</p>
         </div>
-
-        <div class="p-4 bg-nav-bg border border-white/10 rounded">
-          <h2 class="text-primary text-xl font-semibold">Report_Final.docx</h2>
-          <p class="text-white/60">Generated: 1 week ago</p>
-          <button class="mt-3 px-4 py-2 rounded bg-accent text-black font-semibold shadow-glow-accent">
-            View Summary
-          </button>
-        </div>
-
-        <div class="p-4 bg-nav-bg border border-white/10 rounded">
-          <h2 class="text-primary text-xl font-semibold">Notes.txt</h2>
-          <p class="text-white/60">Generated: 3 weeks ago</p>
-          <button class="mt-3 px-4 py-2 rounded bg-accent text-black font-semibold shadow-glow-accent">
-            View Summary
-          </button>
-        </div>
-
       </div>
 
     </main>
@@ -208,6 +189,63 @@
     );
 
     logoutBtn?.addEventListener("click", () => signOut(auth));
+    const historyContainer = document.getElementById("history-container");
+    const loader = document.getElementById("history-loader");
+
+    async function loadHistory() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/history");
+        if (!response.ok) throw new Error("Failed to load history");
+
+        const data = await response.json();
+
+        // Clear loader
+        historyContainer.innerHTML = "";
+
+        const keys = Object.keys(data).reverse(); // Show newest first (DOC_003 before DOC_001)
+
+        if (keys.length === 0) {
+          historyContainer.innerHTML = `<p class="text-white/50 italic">No history found.</p>`;
+          return;
+        }
+
+        keys.forEach(key => {
+          const item = data[key];
+          const card = document.createElement("div");
+          card.className = "p-4 bg-nav-bg border border-white/10 rounded hover:border-accent/50 transition duration-300";
+
+          card.innerHTML = `
+                  <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-primary text-xl font-semibold">${item.filename}</h2>
+                        <div class="flex gap-4 mt-1 text-sm text-white/60">
+                            <span>ID: ${key}</span>
+                            <span>•</span>
+                            <span>Date: ${item.date}</span>
+                            <span>•</span>
+                            <span class="text-accent">${item.category || 'Uncategorized'}</span>
+                        </div>
+                    </div>
+                  </div>
+                  <button onclick="viewSummary('${key}')" class="mt-4 px-4 py-2 rounded bg-accent text-black font-semibold shadow-glow-accent hover:brightness-110 transition">
+                    View Summary
+                  </button>
+                `;
+          historyContainer.appendChild(card);
+        });
+
+      } catch (err) {
+        historyContainer.innerHTML = `<p class="text-red-400">Error: ${err.message}</p>`;
+      }
+    }
+
+    // Function to redirect to summary page with ID parameter
+    window.viewSummary = function (docId) {
+      window.location.href = `summary.html?id=${docId}`;
+    };
+
+    // Load on start
+    loadHistory();
   </script>
 
 </body>
