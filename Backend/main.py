@@ -2,8 +2,10 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import datetime
+import json
 from Extracter import TextExtracter
 from rag import RAGSystem
+from collections import Counter
 
 app = FastAPI()
 
@@ -25,6 +27,16 @@ def process_file_backend(file_path: str):
     result = extractor.handleFiles(file_path) 
     return result
 
+def get_database_data():
+    db_path = "Database/data.json"
+    if not os.path.exists(db_path):
+        return {}
+    try:
+        with open(db_path, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+    
 @app.post("/preprocess")
 async def preprocess(file: UploadFile = File(...)):
     global LAST_RESULT
@@ -83,3 +95,37 @@ async def ask(query: str):
     except Exception as e:
         print(f"Error in /ask: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/history")
+async def get_history():
+    data = get_database_data()
+    return data
+
+@app.get("/document/{doc_id}")
+async def get_document(doc_id: str):
+    data = get_database_data()
+    if doc_id not in data:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return data[doc_id]
+
+@app.get("/analysis")
+async def get_analysis():
+    """Calculates statistics for the dashboard."""
+    data = get_database_data()
+    
+    total_docs = len(data)
+    
+    # Extract all categories
+    categories = [item.get("category", "Unknown") for item in data.values()]
+    
+    # Count frequency of each category
+    category_counts = Counter(categories)
+    
+    # Sort by most frequent
+    sorted_categories = dict(sorted(category_counts.items(), key=lambda item: item[1], reverse=True))
+
+    return {
+        "total_documents": total_docs,
+        "unique_categories": len(category_counts),
+        "category_counts": sorted_categories
+    }
