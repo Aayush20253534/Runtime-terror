@@ -52,15 +52,12 @@
           <span class="material-symbols-outlined !text-3xl">upload_file</span>
           <div class="absolute -left-6 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent"></div>
         </a>
-
         <a class="nav-item text-white/60 hover:text-accent transition-colors" href="summary.html" id="nav-summary">
           <span class="material-symbols-outlined !text-3xl">description</span>
         </a>
-
         <a class="nav-item text-white/60 hover:text-accent transition-colors" href="history.html" id="nav-history">
           <span class="material-symbols-outlined !text-3xl">history</span>
         </a>
-
         <a class="nav-item text-white/60 hover:text-accent transition-colors" href="analysis.html" id="nav-analysis">
           <span class="material-symbols-outlined !text-3xl">analytics</span>
         </a>
@@ -88,7 +85,6 @@
             <div class="w-14 h-14 border-4 border-accent animate-spin rounded-full border-t-transparent"></div>
             <div class="absolute inset-0 w-14 h-14 border-4 border-primary animate-spin-slow rounded-full border-b-transparent"></div>
           </div>
-
           <p class="text-white/70 text-sm">Processing...</p>
         </div>
 
@@ -163,7 +159,6 @@
       handleFile(e.dataTransfer.files[0]);
     });
 
-    // Summarize button click
     summarizeBtn.addEventListener("click", () => {
       // Redirect to summary page (no ID means it will load latest)
       window.location.href = "summary.html";

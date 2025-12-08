@@ -40,30 +40,6 @@
 
 <body class="bg-surface font-display flex flex-col min-h-screen">
 
-  <!-- Profile Bar -->
-  <div id="profile-bar"
-    class="fixed top-4 right-4 hidden items-center gap-3 bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 text-white z-50">
-    <span class="material-symbols-outlined text-accent">person</span>
-    <span id="profile-email" class="text-sm"></span>
-    <button id="logout-btn"
-      class="bg-accent text-black text-sm font-bold px-3 py-1 rounded hover:brightness-110 transition">Logout</button>
-  </div>
-
-  <!-- Login Modal -->
-  <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-surface p-8 rounded-lg w-96 flex flex-col gap-4">
-      <h2 class="text-2xl font-bold text-white text-center">Login</h2>
-      <input id="login-email" type="email" placeholder="Email" class="p-2 rounded bg-black/20 text-white">
-      <input id="login-password" type="password" placeholder="Password" class="p-2 rounded bg-black/20 text-white">
-      <div class="flex justify-between gap-2">
-        <button id="login-btn"
-          class="flex-1 bg-accent text-black font-bold py-2 rounded hover:brightness-110 transition">Login</button>
-        <button id="signup-btn"
-          class="flex-1 bg-primary text-black font-bold py-2 rounded hover:brightness-110 transition">Signup</button>
-      </div>
-    </div>
-  </div>
-
   <div class="flex flex-1 min-h-[calc(100vh-96px)]">
 
     <aside class="flex flex-col items-center gap-8 bg-nav_bg p-4 border-r border-white/10 min-h-full">
@@ -115,13 +91,6 @@
   </div>
 
   <script>
-    const el = document.getElementById("nav-summary");
-    el.classList.remove("text-white/60");
-    el.classList.add("text-accent", "relative");
-    const bar = document.createElement("div");
-    bar.className = "absolute -left-2 top-1/2 -translate-y-1/2 h-5 w-1 bg-accent rounded-full shadow-glow-accent";
-    el.appendChild(bar);
-
     const fileNameEl = document.getElementById("file-name");
     const fileDateEl = document.getElementById("file-date");
     const summaryBox = document.getElementById("summary-box");
