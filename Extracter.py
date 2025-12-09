@@ -1,65 +1,60 @@
-'''It deals with the functions related to text extraction from PDFs and OCR for images.'''
-
-import pymupdf
+import fitz  # PyMuPDF
 import os
-import easyocr
 import json
-
-from google import genai
+import pytesseract
+from PIL import Image
 from pathlib import Path
 from datetime import date
 from dotenv import load_dotenv
+from google import genai
+
 
 class GenerationModel:
-
-    def __init__(self) -> None:
-        env_path = Path(__file__).parent / "API_key.env"
-        load_dotenv(env_path)
-
+    def __init__(self):
+        load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY")
 
+        if not self.api_key:
+            raise ValueError("GEMINI_API_KEY is missing. Add it in Render environment.")
+
         self.client = genai.Client(api_key=self.api_key)
-        # self.model = genai.GenerativeModel("gemini-2.5-flash") 
+
 
 class TextExtracter:
 
-
-    def __init__(self) -> None:
-
+    def __init__(self):
         self.model = GenerationModel()
-        
-    def handleFiles(self, file:str) -> dict:
-        
+
+    def handleFiles(self, file: str) -> dict:
+
         if file.endswith(".pdf"):
             self.text = self.extractText(file)
-        
         else:
             self.text = self.image_OCR(file)
-        
+
         self.summary, self.category = self.summarize_categorize(self.text)
-        
+
+        # Ensure DB folder exists
+        os.makedirs("Database", exist_ok=True)
+
         try:
             with open("Database/data.json", "r") as f:
                 data_stored = json.load(f)
-                total_entries = len(data_stored)
-        
         except FileNotFoundError:
             data_stored = {}
-            total_entries = 0
-        index = "DOC_" + "0"*(3-len(str((total_entries+1)))) + str(total_entries+1)
-        data_entry = \
-        {
-            index:
-            {
-                "filename" : os.path.basename(file),
-                "text" : self.text,
-                "summary" : self.summary,
-                "date" : f"{date.today()}",
-                "category" : self.category,
-                "vector_id" : index
+
+        index = f"DOC_{len(data_stored)+1:03d}"
+
+        data_entry = {
+            index: {
+                "filename": os.path.basename(file),
+                "text": self.text,
+                "summary": self.summary,
+                "date": f"{date.today()}",
+                "category": self.category,
+                "vector_id": index
             }
         }
-
 
         data_stored[index] = data_entry[index]
 
@@ -67,84 +62,60 @@ class TextExtracter:
             json.dump(data_stored, f, indent=4)
 
         return data_stored[index]
-    
-    def extractText(self, filePath:str, pagelevel:bool = False, pages:list=[]) -> str:
-        
-        if not pagelevel:
-            with pymupdf.open(filePath) as doc:
 
-                text = chr(12).join([page.get_text() for page in doc])
-        
-        else: 
-            with pymupdf.open(filePath) as doc:
-                
-                for i in pages:
+    def extractText(self, filePath: str) -> str:
+        text = ""
+        with fitz.open(filePath) as doc:
+            for page in doc:
+                text += page.get_text() + "\n\n"
+        return text.strip()
 
-                    page = doc[i-1]
-                    text = chr(12).join([page.get_text()])
-        
-        return text
+    def image_OCR(self, imagePath: str) -> str:
+        img = Image.open(imagePath)
+        text = pytesseract.image_to_string(img)
+        return text.strip()
 
-    def image_OCR(self, imagePath:str) -> str:
-        
-        reader = easyocr.Reader(['en'])
-        text = reader.readtext(imagePath)
-        lines = [entry[1] for entry in text]
+    def summarize_categorize(self, text):
+        # --- Summary Prompt ---
+        prompt_summary = f"""
+Summarize the following document. The summary must be plain text.
+Also add simple bullet points at the end.
 
-        text = "\n".join(lines)
+Document:
+{text}
+"""
 
-        return text
-
-
-    def summarize_categorize(self,text) -> str:
-        
-        prompt_summary = f"""You are an AI engine designed for document intelligence. Summarize the provided document into a clear and concise textual summary.
-
-                            RULES:
-                            1. Output must be plain text only.
-                            2. Do not use any asterisks, special characters, markdown formatting.
-                            3. Do not add headings or labels.
-                            4. Preserve the original meaning while shortening the content.
-                            5. Ensure the summary is factual, coherent, and stays within the context of the document.
-                            6. Also provide bullet points at the end of the summary. You can provide labels for these bullet points.
-                            7. Enclose the words to be bolded inside <b> </b> tags.
-
-                            Now summarize the following document :
-                            {text}
-                        """
         summary = self.model.client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt_summary
-        )
+        ).text
 
-        prompt_category = f"""You are an AI classifier for the Yellow Ranger Doc-Sage Intelligence Engine.
-                            Your job is to classify the document into exactly one of the following predefined categories:
-                            Operations
-                            Enemy sightings
-                            Zord Systems
-                            Ranger Personnel
-                            Research & Development
-                            Weapons & Equipment
-                            Communications
-                            Administration
-                            Security
-                            Archives
-                            Logistics
-                            Infrastructure & Maintenance
-                            
-                            RULES:
-                            1. Output strictly one word only, exactly matching one of the categories above.
-                            2. Output must be plain text only.
-                            3. Do not output any symbols, punctuation, explanations, or phrases.
-                            4. If the document partially fits many categories, choose the closest and most dominant one.
-                            
-                            Classify this document:
-                            {text}
-                        """
+        # --- Category Prompt ---
+        prompt_category = f"""
+Classify the document into EXACTLY one of these:
+
+Operations
+Enemy sightings
+Zord Systems
+Ranger Personnel
+Research & Development
+Weapons & Equipment
+Communications
+Administration
+Security
+Archives
+Logistics
+Infrastructure & Maintenance
+
+Return ONLY the category word.
+
+Document:
+{text}
+"""
+
         category = self.model.client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt_category
-        )
+        ).text.strip()
 
-        return summary.text, category.text
-        
+        return summary, category
