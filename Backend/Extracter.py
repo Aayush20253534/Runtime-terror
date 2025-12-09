@@ -1,6 +1,6 @@
 '''It deals with the functions related to text extraction from PDFs and OCR for images.'''
 
-import pymupdf
+import fitz  
 import os
 import easyocr
 import json
@@ -71,12 +71,12 @@ class TextExtracter:
     def extractText(self, filePath:str, pagelevel:bool = False, pages:list=[]) -> str:
         
         if not pagelevel:
-            with pymupdf.open(filePath) as doc:
+            with fitz.open(filePath) as doc:
 
                 text = chr(12).join([page.get_text() for page in doc])
         
         else: 
-            with pymupdf.open(filePath) as doc:
+            with fitz.open(filePath) as doc:
                 
                 for i in pages:
 
