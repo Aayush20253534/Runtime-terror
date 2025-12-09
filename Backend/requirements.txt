@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-torch==2.2.2
-torchvision==0.17.2
+torch==2.6.0
+torchvision==0.21.0
 faiss-cpu==1.7.4
 sentence-transformers==2.6.1
 easyocr==1.7.1
